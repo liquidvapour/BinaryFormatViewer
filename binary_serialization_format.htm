@@ -1,0 +1,1546 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+	
+		<title>Binary Serialization Format</title>
+		<style> body { FONT-SIZE: x-small; FONT-FAMILY: arial }
+	table { FONT-SIZE: x-small; FONT-FAMILY: arial }
+	</style>
+	<script charset="utf-8" id="injection_graph_func" src="binary_serialization_format_files/injection_graph_func.js"></script><script id="_nameHighlight_injection"></script><link class="skype_name_highlight_style" href="binary_serialization_format_files/injection_nh_graph.css" type="text/css" rel="stylesheet" charset="utf-8" id="_injection_graph_nh_css"><link href="binary_serialization_format_files/skypeplugin_dropdownmenu.css" type="text/css" rel="stylesheet" charset="utf-8" id="_skypeplugin_dropdownmenu_css"></head><body>
+		<h1>Binary Serialization Format</h1>
+		<p>by Lluis Sanchez Gual&nbsp;(<a href="mailto:lluis@novell.com">lluis@novell.com</a>)</p>
+		<ul>
+			<li>
+				<a href="#intro">Introduction</a>
+			</li><li>
+				<a href="#format">Format description</a>
+				<ul>
+					<li>
+						<a href="#example">An example</a></li></ul>
+			</li><li>
+				<a href="#elements">Binary elements</a>
+				<ul>
+					<li>
+						<a href="#elem1">1 - RefTypeObject</a>
+					</li><li>
+						<a href="#elem4">4 - RuntimeObject</a>
+					</li><li>
+						<a href="#elem5">5 - ExternalObject</a>
+					</li><li>
+						<a href="#elem6">6 - String</a>
+					</li><li>
+						<a href="#elem7">7 - GenericArray</a>
+					</li><li>
+						<a href="#elem8">8 - BoxedPrimitiveTypeValue</a>
+					</li><li>
+						<a href="#elem9">9 - ObjectReference</a>
+					</li><li>
+						<a href="#elem10">10 - NullValue</a>
+					</li><li>
+						<a href="#elem11">11 - End</a>
+					</li><li>
+						<a href="#elem12">12 - Assembly</a>
+					</li><li>
+						<a href="#elem13">13 - ArrayFiller8b</a>
+					</li><li>
+						<a href="#elem14">14 - ArrayFiller32b</a>
+					</li><li>
+						<a href="#elem15">15 - ArrayOfPrimitiveType</a>
+					</li><li>
+						<a href="#elem16">16 - ArrayOfObject</a>
+					</li><li>
+						<a href="#elem17">17 - ArrayOfString</a>
+					</li><li>
+						<a href="#elem21">21 - MethodCall</a>
+					</li><li>
+						<a href="#elem22">22 - MethodResponse</a></li></ul>
+			</li><li>
+				<a href="#other">Other Elements</a>
+			</li>
+			<ul>
+				<li>
+					<a href="#string">string</a>
+				</li><li>
+					<a href="#primitive-value">primitive-value</a>
+				</li><li>
+					<a href="#value">value</a>
+				</li><li>
+					<a href="#type-tag">type-tag</a>
+				</li><li>
+					<a href="#type-spec">type-spec</a>
+				</li><li>
+					<a href="#method-call-flags">method-call-flags</a>
+				</li><li>
+					<a href="#method-response-flags">method-response-flags</a>
+				</li><li>
+					<a href="#return-type-tag">return-type-tag</a>
+				</li><li>
+					<a href="#primitive-type-code">primitive-type-code</a></li></ul>
+		</ul>
+		<a name="intro"></a>
+		<h2>Introduction</h2>
+		<p>This document describes the format used by the class BinaryFormatter to 
+			serialize object graphs. The document is based on the analysis of the output of 
+			the BinaryFormatter&nbsp;of the Microsoft .NET runtime, so it is probably not 
+			complete, since I cannot be sure that I have tested all cases. In fact, there 
+			are some gaps in some tables of codes, so if you find a meaning for the missing 
+			codes, please contact me and I'll update the document.</p>
+		<a name="format"></a>
+		<h2>Format description</h2>
+		<p>An object serialization is a sequence of binary elements.&nbsp;A binary element 
+			coluld be for example a description of an object, an array, an assembly, etc. 
+			Each binary element has a specific format, which is described in the following 
+			sections.</p>
+		<p>This table shows the available binary elements:</p>
+		<p>
+			<table id="Table1" style="width: 560px; height: 94px;" border="1" cellpadding="1" cellspacing="1" width="560">
+				<tbody><tr>
+					<td width="40"><strong>Code</strong></td>
+					<td><strong>Label</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="40">0</td>
+					<td>Header</td>
+					<td>Allways written at the beggining of a serialization</td>
+				</tr>
+				<tr>
+					<td width="40">1</td>
+					<td><a href="#elem1">RefTypeObject</a></td>
+					<td>Object with no type metadata</td>
+				</tr>
+				<tr>
+					<td width="40">4</td>
+					<td><a href="#elem4">RuntimeObject</a></td>
+					<td>Corlib object</td>
+				</tr>
+				<tr>
+					<td width="40">5</td>
+					<td><a href="#elem5">ExternalObject</a></td>
+					<td>Object</td>
+				</tr>
+				<tr>
+					<td width="40">6</td>
+					<td><a href="#elem6">String</a></td>
+					<td>String</td>
+				</tr>
+				<tr>
+					<td width="40">7</td>
+					<td><a href="#elem7">GenericArray</a></td>
+					<td>Array</td>
+				</tr>
+				<tr>
+					<td width="40">8</td>
+					<td><a href="#elem8">BoxedPrimitiveTypeValue</a></td>
+					<td>Primitive type value</td>
+				</tr>
+				<tr>
+					<td width="40">9</td>
+					<td><a href="#elem9">ObjectReference</a></td>
+					<td>Object reference</td>
+				</tr>
+				<tr>
+					<td width="40">10</td>
+					<td><a href="#elem10">NullValue</a></td>
+					<td>Null value</td>
+				</tr>
+				<tr>
+					<td width="40">11</td>
+					<td><a href="#elem11">End</a></td>
+					<td>End of stream</td>
+				</tr>
+				<tr>
+					<td width="40">12</td>
+					<td><a href="#elem12">Assembly</a></td>
+					<td>Assembly declaration</td>
+				</tr>
+				<tr>
+					<td width="40">13</td>
+					<td><a href="#elem13">ArrayFiller8b</a></td>
+					<td>Null filler (8 bit length)</td>
+				</tr>
+				<tr>
+					<td width="40">14</td>
+					<td><a href="#elem14">ArrayFiller32b</a></td>
+					<td>Null filler (16 bit length)</td>
+				</tr>
+				<tr>
+					<td width="40">15</td>
+					<td><a href="#elem15">ArrayOfPrimitiveType</a></td>
+					<td>Array of primitive type</td>
+				</tr>
+				<tr>
+					<td width="40">16</td>
+					<td><a href="#elem16">ArrayOfObject</a></td>
+					<td>Array of Object</td>
+				</tr>
+				<tr>
+					<td width="40">17</td>
+					<td><a href="#elem17">ArrayOfString</a></td>
+					<td>Array of string</td>
+				</tr>
+				<tr>
+					<td width="40">21</td>
+					<td><a href="#elem21">MethodCall</a></td>
+					<td>Method call</td>
+				</tr>
+				<tr>
+					<td width="40">22</td>
+					<td><a href="#elem22">MethodResponse</a></td>
+					<td>Method response</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<p>All elements begin with a byte that identifies the type of element. It is shown 
+			in the "Code" column. In the implementation of the formatter I use an enum to 
+			represent those codes. The "Label" column is the name of the corresponding enum 
+			element.</p>
+		<a name="example"></a>
+		<h3>An example</h3>
+		<p>The best way to underestand the format is to look at an example. Let's see how 
+			the following structure of classes would be serialized:</p>
+		<blockquote dir="ltr" style="margin-right: 0px;">
+			<p><font face="Courier New">class A<br>
+					{<br>
+					&nbsp;&nbsp;&nbsp;&nbsp; B bval = new B();<br>
+					&nbsp;&nbsp;&nbsp;&nbsp; C cval = new C();<br>
+					&nbsp;&nbsp;&nbsp;&nbsp; string msg = "hello";<br>
+					}<br>
+					<br>
+					class B<br>
+					{<br>
+					&nbsp;&nbsp;&nbsp;&nbsp; string str = "bye";<br>
+					}<br>
+					<br>
+					struct C<br>
+					{<br>
+					&nbsp;&nbsp;&nbsp;&nbsp; string[] info = new string[] {"hello","world"}<br>
+					}</font></p>
+		</blockquote>
+		<p>The serialization of an instance of class A would result in a sequence of binary 
+			elements like the following:</p>
+		<p>
+			<table id="Table35" border="1" cellpadding="1" cellspacing="1" width="100%">
+				<tbody><tr>
+					<td valign="top" width="169"><strong>Element</strong></td>
+					<td valign="top" width="40"><strong>Bytes</strong></td>
+					<td valign="top" width="186"><strong>Data</strong></td>
+					<td valign="top"><strong>Comments</strong></td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">Header</td>
+					<td valign="top" width="40">0<br>
+						1,0,0,0,<br>
+						255,255,255,255,<br>
+						1,0,0,0,0,0,0,0</td>
+					<td valign="top" width="186">Element code ?</td>
+					<td valign="top">This sequence of bytes is serialized at the beginning. I'm sure it 
+						has a meaning, but I don't know it.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169"><a href="#elem12">Assembly</a></td>
+					<td valign="top" width="40">1<br>
+						1,0,0,0<br>
+						"MyAssembly"</td>
+					<td valign="top" width="186">Element code<br>
+						ID of the assembly (1)<br>
+						Full name of the assembly</td>
+					<td valign="top">
+						<p>Before serializing an object, the assembly where the object is implemented has 
+							to be serialized. The formatter assigns an ID to the assembly (ID 1 in this 
+							case). This ID will by used to refer to this assembly.</p>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169"><a href="#elem5">ExternalObject</a></td>
+					<td valign="top" width="40">5<br>
+						2,0,0,0<br>
+						"A"<br>
+						3,0,0,0<br>
+						"bval","cval","msg"<br>
+						4,4,1<br>
+						"B"<br>
+						1,0,0,0<br>
+						"C"<br>
+						1,0,0,0<br>
+						1,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (2)<br>
+						Class name<br>
+						Field count<br>
+						Field names<br>
+						Field type tags<br>
+						Class name of field "bval"<br>
+						Assembly ID of field "bval"<br>
+						Class name of field "cval"<br>
+						Assembly ID of field "cval"<br>
+						Assembly ID of this object</td>
+					<td valign="top">Serialization of the root object. Each object has an ID that is 
+						used, for example, to specify object relations. The object binary element has 
+						two parts. The first one is type metadata: the name and type of serialized 
+						fields. The second part is the object data: field values. The data part is 
+						shown in the following nested elements.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#elem9">ObjectReference</a></td>
+					<td valign="top" width="40">9<br>
+						5,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						ID of the referred object (5)</td>
+					<td valign="top">Reference objects are not serialized inside the container element. 
+						Instead, an ObjectReference is serialized, and the object itself queued for 
+						later serialization.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#elem5">ExternalObject</a></td>
+					<td valign="top" width="40">5<br>
+						3,0,0,0<br>
+						C<br>
+						1,0,0,0<br>
+						"info"<br>
+						6<br>
+						1,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (3)<br>
+						Class name<br>
+						Field count<br>
+						Field name<br>
+						Field type tag<br>
+						Assembly ID of this object</td>
+					<td valign="top">On the other hand, value type objects are serialized inside the 
+						container element.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="#elem9">ObjectReference</a></td>
+					<td valign="top" width="40">9<br>
+						7,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						ID of the referred object (7)</td>
+					<td valign="top">This is again a reference object, so it is serialized later.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#elem6">String</a></td>
+					<td valign="top" width="40">6<br>
+						4,0,0,0<br>
+						"hello"</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (4)<br>
+						String value</td>
+					<td valign="top">Strings are serialized like value objects</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169"><a href="#elem5">ExternalObject</a></td>
+					<td valign="top" width="40">5<br>
+						5,0,0,0<br>
+						"B"<br>
+						1,0,0,0<br>
+						"str"<br>
+						1<br>
+						1,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (5)<br>
+						Class name<br>
+						Field count<br>
+						Field name<br>
+						Field type tag<br>
+						Assembly ID of this object</td>
+					<td valign="top">
+						<p>Reference objects queued for serialization are serialized after the root object.</p>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#elem6">String</a></td>
+					<td valign="top" width="40">6<br>
+						6,0,0,0<br>
+						"bye"</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (6)<br>
+						String value</td>
+					<td valign="top">A string</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169"><a href="#elem17">ArrayOfString</a></td>
+					<td valign="top" width="40">17<br>
+						7,0,0,0<br>
+						2,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (7)<br>
+						Element count</td>
+					<td valign="top">This could be also encoded using the binary&nbsp;element Array 
+						(7), but ArrayOfString is more specific and saves bytes.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#elem9">ObjectReference</a></td>
+					<td valign="top" width="40">9<br>
+						4,0,0,0</td>
+					<td valign="top" width="186">Element code<br>
+						ID of the referred object (4)</td>
+					<td valign="top">This string was already serialized. Use a backwards reference.</td>
+				</tr>
+				<tr>
+					<td valign="top" width="169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#elem6">String</a></td>
+					<td valign="top" width="40">6<br>
+						8,0,0,0<br>
+						"world"</td>
+					<td valign="top" width="186">Element code<br>
+						Object ID (8)<br>
+						String value</td>
+					<td valign="top">Another string</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elements"></a>
+		<h2>Binary elements</h2>
+		<p>The following sections show the format of each binary element. The format is 
+			presented in a table with two columns. The first one shows the sequence of 
+			bytes and the second one a description of each element in the sequence.</p>
+		<p>A special notation is used to represent the bytes. Here are some examples:</p>
+		<p>
+			<table id="Table36" style="width: 448px; height: 129px;" border="1" cellpadding="1" cellspacing="1" width="448">
+				<tbody><tr>
+					<td width="193"><strong>Example of element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="193">(byte) 7</td>
+					<td>A single byte</td>
+				</tr>
+				<tr>
+					<td width="193">uint</td>
+					<td>Any uint value (4 bytes)</td>
+				</tr>
+				<tr>
+					<td width="193"><em><a href="#type-tag">type-tag</a></em></td>
+					<td>Names&nbsp;in italic are described in the section "Other elements"</td>
+				</tr>
+				<tr>
+					<td width="193"><em><a href="#string">string</a></em>&nbsp;*</td>
+					<td>* represents a sequence of elements</td>
+				</tr>
+				<tr>
+					<td width="193">object</td>
+					<td>Full serialization of an object</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem1"></a>
+		<h3>1 - RefTypeObject
+		</h3>
+		<p>An object is serialized in two parts. The first one is type metadata, and the 
+			second one is the object data. When several objects of the same type are 
+			serialized, only the first one has the metadata part. The other objects are 
+			serialized using the RefTypeObject element, which instead of the metadata, it 
+			includes an ID of an object that is of the same type as the one being 
+			serialized.</p>
+		<p>
+			<table id="Table2" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 1</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>ID of a previously serialized object from which to take type metadata.</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#value">value</a> </em>*</td>
+					<td>Values of the fields of the object</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem4"></a>
+		<h3>4 - RuntimeObject</h3>
+		<p>This element is used to serialize objects of types that are implemented in the 
+			core library of the framework. The only difference from the format for other 
+			objects if that it does not include assembly information, which is not needed 
+			since the assembly will always be mscorlib.</p>
+		<p>
+			<table id="Table21" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 4</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#string">string</a></em></td>
+					<td>Class name, including namespace</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Number of serialized fields</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#string">string</a> </em>*</td>
+					<td>Names of the fields</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-tag">type-tag</a> *</em></td>
+					<td>type-tag of each field</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-spec">type-spec</a> *</em></td>
+					<td>type-spec of each field</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#value">value</a> *</em></td>
+					<td>Values of the fields of the object</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem5"></a>
+		<h3>5 - ExternalObject</h3>
+		<p>This element can be used to serialize any object from any assembly.</p>
+		<h3>
+			<table id="Table22" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 5</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#string">string</a></em></td>
+					<td>Class name, including namespace</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Number of serialized fields</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#string">string</a> </em>*</td>
+					<td>Names of the fields</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-tag">type-tag</a> </em>*</td>
+					<td>type-tag of each field</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-spec">type-spec</a> </em>*</td>
+					<td>type-spec of each field</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>ID of the assembly where the class is defined (the assembly must have been 
+						serialized before the class using the binary element 12)</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#value">value</a> </em>*</td>
+					<td>Values of the fields of the object</td>
+				</tr>
+			</tbody></table>
+		</h3>
+		<a name="elem6"></a>
+		<h3>6 - String</h3>
+		<p>A string value.</p>
+		<p>
+			<table id="Table23" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 6</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#string">string</a></em></td>
+					<td>Value of the string</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem7"></a>
+		<h3>7 - GenericArray</h3>
+		<p>This element can be used to represent any array.</p>
+		<h3>
+			<table id="Table24" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 7</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142">byte</td>
+					<td>Array type: 0:single dimension, 1: jagged, 2: multi-dimensional</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Number of dimensions (rank)</td>
+				</tr>
+				<tr>
+					<td width="142">uint *</td>
+					<td>Number of&nbsp;elements for each dimension</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-tag">type-tag</a></em></td>
+					<td>type-tag of array's&nbsp;element type</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-spec">type-spec</a></em></td>
+					<td>type-spec of array's&nbsp;element type</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#value">value</a> *</em></td>
+					<td>Values of the elements, row by row</td>
+				</tr>
+			</tbody></table>
+		</h3>
+		<a name="elem8"></a>
+		<h3>8 - BoxedPrimitiveTypeValue</h3>
+		<p>This element represents a primitive type value boxed as an object.</p>
+		<p>
+			<table id="Table25" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 8</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-spec">type-spec</a></em></td>
+					<td>type-spec of the primitive type</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#primitive-value">primitive-value</a></em></td>
+					<td>Raw value</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem9"></a>
+		<h3>9 - ObjectReference</h3>
+		<p>This element represents a reference to an object already serialized (backwards 
+			reference) or that will be serialized later (forward reference).
+		</p>
+		<p>
+			<table id="Table26" style="width: 568px; height: 16px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 9</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>ID of the referred object</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem10"></a>
+		<h3>10 - NullValue</h3>
+		<p>A&nbsp;null value.</p>
+		<table id="Table27" style="width: 568px; height: 16px;" border="1" cellpadding="1" cellspacing="1" width="568">
+			<tbody><tr>
+				<td width="142"><strong>Element</strong></td>
+				<td><strong>Description</strong></td>
+			</tr>
+			<tr>
+				<td width="142">(byte) 10</td>
+				<td>Element code</td>
+			</tr>
+		</tbody></table>
+		<p></p>
+		<a name="elem11"></a>
+		<h3>
+			<p>11 - End</p>
+		</h3>
+		<p>This element marks the end of the serialized object graph.</p>
+		<table id="Table28" style="width: 568px; height: 16px;" border="1" cellpadding="1" cellspacing="1" width="568">
+			<tbody><tr>
+				<td width="142"><strong>Element</strong></td>
+				<td><strong>Description</strong></td>
+			</tr>
+			<tr>
+				<td width="142">(byte) 11</td>
+				<td>Element code</td>
+			</tr>
+		</tbody></table>
+		<a name="elem12"></a>
+		<h3>
+			<p>12 - Assembly</p>
+		</h3>
+		<p>Defines an assembly. Each assembly is defined only once and has an ID. This ID 
+			is used when serializing an object (element 5) to specify the assembly where 
+			object's type is implemented.</p>
+		<table id="Table29" style="width: 568px; height: 16px;" border="1" cellpadding="1" cellspacing="1" width="568">
+			<tbody><tr>
+				<td width="142"><strong>Element</strong></td>
+				<td><strong>Description</strong></td>
+			</tr>
+			<tr>
+				<td width="142">(byte) 12</td>
+				<td>Element code</td>
+			</tr>
+			<tr>
+				<td width="142">uint</td>
+				<td>Assembly ID</td>
+			</tr>
+			<tr>
+				<td width="142"><em><a href="#string">string</a></em></td>
+				<td>Full name of the assembly</td>
+			</tr>
+		</tbody></table>
+		<a name="elem13"></a>
+		<h3>
+			<p>13 - ArrayFiller8b</p>
+		</h3>
+		<p>This element can be used when serializing array data to specify multiple 
+			consecutive null values. It it only used in single dimension arrays of 
+			reference objects (not valid for value-type objects).</p>
+		<table id="Table30" style="width: 568px; height: 16px;" border="1" cellpadding="1" cellspacing="1" width="568">
+			<tbody><tr>
+				<td width="142"><strong>Element</strong></td>
+				<td><strong>Description</strong></td>
+			</tr>
+			<tr>
+				<td width="142">(byte) 13</td>
+				<td>Element code</td>
+			</tr>
+			<tr>
+				<td width="142">byte</td>
+				<td>Number of consecutive null values</td>
+			</tr>
+		</tbody></table>
+		<p></p>
+		<a name="elem14"></a>
+		<h3>
+			<p>14 - ArrayFiller32b</p>
+		</h3>
+		<p>The same as ArrayFiller8b, but it uses a uint to specify the length.</p>
+		<table id="Table31" style="width: 568px; height: 16px;" border="1" cellpadding="1" cellspacing="1" width="568">
+			<tbody><tr>
+				<td width="142"><strong>Element</strong></td>
+				<td><strong>Description</strong></td>
+			</tr>
+			<tr>
+				<td width="142">(byte) 14</td>
+				<td>Element code</td>
+			</tr>
+			<tr>
+				<td width="142">uint</td>
+				<td>Number of consecutive null values</td>
+			</tr>
+		</tbody></table>
+		<p></p>
+		<a name="elem15"></a>
+		<h3>
+			<p>15 - ArrayOfPrimitiveType</p>
+		</h3>
+		<p>This element can be used to represent a single dimension array of primitive type 
+			values.</p>
+		<p>
+			<table id="Table32" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 15</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Number of&nbsp;elements</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#type-spec">type-spec</a></em></td>
+					<td>type-spec of array's&nbsp;element type</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#primitive-value">primitie-value</a> *</em></td>
+					<td>Values of the elements</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem16"></a>
+		<h3>16&nbsp;- ArrayOfObject</h3>
+		<p>This element can be used to represent a single dimension array of Object (i.e. 
+			an object[] ).</p>
+		<p>
+			<table id="Table33" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 16</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Number of&nbsp;elements</td>
+				</tr>
+				<tr>
+					<td width="142">object *</td>
+					<td>Values of the elements</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem17"></a>
+		<h3>17 - ArrayOfString</h3>
+		<p>This element can be used to represent a single dimension array of&nbsp;String 
+			(i.e. an string[] ).</p>
+		<p>
+			<table id="Table34" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 17</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Object ID</td>
+				</tr>
+				<tr>
+					<td width="142">uint</td>
+					<td>Number of&nbsp;elements</td>
+				</tr>
+				<tr>
+					<td width="142">object *</td>
+					<td>Values of the elements</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="elem21"></a>
+		<h3>21 Method call</h3>
+		<p>Represents a method call. The format of a method call can vary depending on the 
+			type of the parameters.&nbsp;The following&nbsp;table shows the common format:</p>
+		<p>
+			<table id="Table20" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 21</td>
+					<td>Element code</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#method-call-flags">method-call-flags</a></em></td>
+					<td>Describes wich information includes the method call</td>
+				</tr>
+				<tr>
+					<td width="142">(byte) 0, 0, 0</td>
+					<td>???</td>
+				</tr>
+				<tr>
+					<td width="142"><em><em><a href="#type-spec">type-spec</a><br>
+								<em><a href="#primitive-value">primitive-value</a></em></em></em></td>
+					<td>Method name</td>
+				</tr>
+				<tr>
+					<td width="142"><em><em><em><a href="#type-spec">type-spec</a><br>
+									<em><a href="#primitive-value">primitive-value</a></em></em></em></em></td>
+					<td>Class name (including namespace and assembly)</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<p>The following tables describe the format of the message content depending on the 
+			value of method-call-flags:</p>
+		<h4>method-call-flags &amp; NoArguments</h4>
+		<p>Used for calls to methods without parameters.</p>
+		<h4>
+			<table id="Table8" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="119"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="119">Header[]</td>
+					<td>Only if there are Headers and method-call-flags has the flag <em>IncludeLogicalCallContext.
+						</em>Headers are serialized only if there is context info. This must be a bug 
+						in MS.NET.</td>
+				</tr>
+				<tr>
+					<td width="119">object[]</td>
+					<td>
+						<p>Array with the following values:</p>
+						<ul>
+							<li>
+							Method signature, only if method-call-flags has the flag IncludesSignature. It 
+							is an array of Type.
+							</li><li>
+								LogicalCallContext instance, only if method-call-flags has the flag 
+								IncludesLogicalCallContext.</li></ul>
+						<p>If the array is empty, it is not serialized.</p>
+					</td>
+				</tr>
+			</tbody></table>
+		</h4>
+		<h4>method-call-flags &amp; PrimitiveArguments</h4>
+		<p>Used for calls to methods in which all parameters are primitive types.</p>
+		<p>
+			<table id="Table5" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="119"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="119">uint</td>
+					<td>Number of parameters</td>
+				</tr>
+				<tr>
+					<td width="119"><em><em><em><em>( <a href="#type-spec">type-spec</a></em></em></em><br>
+							<a href="#primitive-value">primitive-value</a> ) *</em></td>
+					<td>One value for each parameter</td>
+				</tr>
+				<tr>
+					<td width="119">Header[]</td>
+					<td>Only if there are Headers and method-response-flags has the flag <em>IncludeLogicalCallContext.
+						</em>Headers are serialized only if there is context info. This must be a bug 
+						in MS.NET.</td>
+				</tr>
+				<tr>
+					<td width="119">object[]</td>
+					<td>
+						<p>Array with the following values:</p>
+						<ul>
+							<li>
+							Method signature, only if method-call-flags has the flag IncludesSignature. It 
+							is an array of Type.
+							</li><li>
+								LogicalCallContext instance, only if method-call-flags has the flag 
+								IncludesLogicalCallContext.</li></ul>
+						<p>If the array is empty, it is not serialized.</p>
+					</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<h4>method-call-flags &amp; ArgumentsInSimpleArray</h4>
+		<p>Used for calls to methods in which at least one parameter is not a primitive 
+			type, and when no other info needs to be serialized (i.e. context or 
+			signature).</p>
+		<p>
+			<table id="Table6" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="119"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="119">Header[]</td>
+					<td>Only if there are Headers.</td>
+				</tr>
+				<tr>
+					<td width="119">object[]</td>
+					<td>
+						<p>Array of parameters.
+						</p>
+					</td>
+				</tr>
+			</tbody></table>
+			</p><h4>method-call-flags&nbsp;&amp; ArgumentsInMultiArray</h4>
+		<p>Used for calls to methods in which at least one parameter is not a primitive 
+			type, and when other info needs to be serialized (i.e. context or signature).</p>
+		<p>
+			<table id="Table7" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="119"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="119">Header[]</td>
+					<td>Only if there are Headers.</td>
+				</tr>
+				<tr>
+					<td width="119">object[]</td>
+					<td>
+						<p>
+							Array with the following values:</p>
+						<ul>
+							<li>
+							Array of parameters.
+							</li><li>
+							Method signature, only if method-call-flags has the flag IncludesSignature. It 
+							is an array of Type.
+							</li><li>
+								LogicalCallContext instance, only if method-call-flags has the flag 
+								IncludesLogicalCallContext.</li></ul>
+						<p>
+							If the array is empty, it is not serialized.</p>
+					</td>
+				</tr>
+			</tbody></table>
+		</p>
+		 <a name="elem22"></a>
+		<h3>22 Method Response</h3>
+		<p>Represents a method response. The format of a method response can vary depending 
+			on the type of the return value and parameters.&nbsp;The following&nbsp;table 
+			shows the common format:</p>
+		<p>
+			<table id="Table9" style="width: 568px; height: 140px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="142"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="142" height="25">(byte) 22</td>
+					<td height="25">Element code</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#method-response-flags">method-response-flags</a></em></td>
+					<td>Describes which information includes the method call</td>
+				</tr>
+				<tr>
+					<td width="142"><em><a href="#return-type-tag">return-type-tag</a></em></td>
+					<td>Describes which kind of value is returned</td>
+				</tr>
+				<tr>
+					<td width="142">(bytes) 0, 0</td>
+					<td>???</td>
+				</tr>
+			</tbody></table>
+		</p><p></p>
+		<p>The following tables describe the format of the message content depending on the 
+			value of method-response-flags:</p>
+		<h4>method-response-flags &amp; NoArguments</h4>
+		<p>Used when the method has no out arguments.</p>
+		<p>
+			<table id="Table10" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="139"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="139"><em><em><em><a href="#type-spec">type-spec</a><br>
+									<em><a href="#primitive-value">primitive-value</a></em></em></em></em></td>
+					<td>
+						<p><em>Only if return-type-tag was PrimitiveType.<br>
+							</em>Return value.</p>
+					</td>
+				</tr>
+				<tr>
+					<td width="139">Header[]</td>
+					<td>Only if there are Headers.</td>
+				</tr>
+				<tr>
+					<td width="139">object[]</td>
+					<td>
+						<p>Array with the following values:</p>
+						<ul>
+							<li>
+								Return value, only&nbsp;if <em>return-type-tag</em> was <em>ObjectType</em>
+							</li><li>
+								LogicalCallContext instance, only&nbsp;if method-response-flags has the flag 
+								IncludeLogicalCallContext</li></ul>
+						<p>If the array is empty, it is not serialized.</p>
+					</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<h4>method-response-flags &amp; PrimitiveArguments</h4>
+		<p>Used when all out arguments are primitive types.</p>
+		<h2>
+			<table id="Table12" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="139"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="139"><em><em><em><a href="#type-spec">type-spec</a><br>
+									<em><a href="#primitive-value">primitive-value</a></em></em></em></em></td>
+					<td>
+						<p><em>Only if return-type-tag was PrimitiveType.<br>
+							</em>Return value.</p>
+					</td>
+				</tr>
+				<tr>
+					<td width="139">uint</td>
+					<td>Number of out arguments</td>
+				</tr>
+				<tr>
+					<td width="139"><em><em><em>( <a href="#type-spec">type-spec</a>
+									<br>
+									<em><a href="#primitive-value">primitive-value</a> )</em></em></em>&nbsp;*</em></td>
+					<td>One value for each argument</td>
+				</tr>
+				<tr>
+					<td width="139">Header[]</td>
+					<td>Only if there are Headers. Empty otherwise.</td>
+				</tr>
+				<tr>
+					<td width="139">object[]</td>
+					<td>
+						<p>Array with the following values:</p>
+						<ul>
+							<li>
+								Return value, only&nbsp;if <em>return-type-tag</em> was <em>ObjectType</em>
+							</li><li>
+								LogicalCallContext instance, only&nbsp;if method-response-flags has the flag 
+								IncludeLogicalCallContext</li></ul>
+						<p>If the array is empty, it is not serialized.</p>
+					</td>
+				</tr>
+			</tbody></table>
+		</h2>
+		<h4>method-response-flags &amp; ArgumentsInSimpleArray</h4>
+		<p>Used when at least one out argument is not a primitive type, return type is 
+			primitive, and no other info needs to be serialized.</p>
+		<h2>
+			<table id="Table13" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="140"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="140"><em><em><em><a href="#type-spec">type-spec</a><br>
+									<em><a href="#primitive-value">primitive-value</a></em></em></em></em></td>
+					<td>
+						<p><em>Only if return-type-tag was PrimitiveType.<br>
+							</em>Return value.</p>
+					</td>
+				</tr>
+				<tr>
+					<td width="140">Header[]</td>
+					<td>Only if there are Headers.</td>
+				</tr>
+				<tr>
+					<td width="140">object[]</td>
+					<td>Array that contains the out arguments</td>
+				</tr>
+			</tbody></table>
+		</h2>
+		<h4>method-response-flags &amp; ArgumentsInMultiArray</h4>
+		<p>Used when at least one out argument is not a primitive type, return type is not 
+			primitive, and no other info needs to be serialized.</p>
+		<h2>
+			<table id="Table14" style="width: 568px; height: 75px;" border="1" cellpadding="1" cellspacing="1" width="568">
+				<tbody><tr>
+					<td width="141"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="141"><em><em><em><a href="#type-spec">type-spec</a><br>
+									<em><a href="#primitive-value">primitive-value</a></em></em></em></em></td>
+					<td>
+						<p>Only if <em>return-type-tag </em>was <em>PrimitiveType.<br>
+							</em>Return value.</p>
+					</td>
+				</tr>
+				<tr>
+					<td width="141">Header[]</td>
+					<td>Only if there are Headers</td>
+				</tr>
+				<tr>
+					<td width="141">object[]</td>
+					<td>
+						<p>Array with the following values:</p>
+						<ul>
+							<li>
+							Array of out arguments.
+							</li><li>
+								Return value, only&nbsp;if <em>return-type-tag</em> was <em>ObjectType</em>
+							</li><li>
+								LogicalCallContext instance, only&nbsp;if method-response-flags has the flag 
+								IncludeLogicalCallContext</li></ul>
+					</td>
+				</tr>
+			</tbody></table>
+		</h2>
+		<a name="other"></a>
+		<h2>Other elements</h2>
+		<a name="string"></a>
+		<h3>string</h3>
+		<p>A string value, serialized using BinaryWriter. It serializes the length of the 
+			string,&nbsp;using a&nbsp;7-bit encoded int, and then the string chars.</p>
+		<a name="primitive-value"></a>
+		<h3>primitive-value</h3>
+		<p>A primitive value. It can be serialized using BinaryWriter and deserialized 
+			using BinaryReader. DateTime is serialized as a long (using the Ticks 
+			property).
+		</p>
+		<a name="value"></a>
+		<h3>value</h3>
+		<p>It can be a <a href="#primitive-value">primitive-value</a> or any of the 
+			following binary elements:</p>
+		<ul>
+			<li>
+				<a href="#elem1">1 - RefTypeObject</a>
+			(only for value types)
+			</li><li>
+				<a href="#elem4">4 - RuntimeObject</a>
+			(only for value types)
+			</li><li>
+				<a href="#elem5">5 - ExternalObject</a>&nbsp;(only for value types)
+			</li><li>
+				<a href="#elem6">6 - String</a>
+			</li><li>
+				<a href="#elem8">8 - BoxedPrimitiveTypeValue</a>
+			</li><li>
+				<a href="#elem9">9 - ObjectReference</a>
+			</li><li>
+				<a href="#elem10">10 - NullValue</a>
+			</li><li>
+				<a href="#elem13">13 - ArrayFiller8b</a>&nbsp;(only inside 
+			single-dimensional object arrays)
+			</li><li>
+				<a href="#elem14">14 - ArrayFiller32b</a> (only inside single-dimensional 
+				object arrays)</li></ul>
+		<a name="type-tag"></a>
+		<h3>type-tag</h3>
+		<p>Together with a <a href="#type-spec">type-spec</a> value, identifies a type. 
+			Some types can be represented using several type-tags. In this case, the most 
+			specific type-tag is allways used (it will&nbsp;take less bytes).</p>
+		<p>type-tag can be one of the following:</p>
+		<p>
+			<table id="Table18" border="1" cellpadding="1" cellspacing="1" width="600">
+				<tbody><tr>
+					<td><strong>Value</strong></td>
+					<td><strong>Label</strong></td>
+					<td><strong>Description</strong></td>
+					<td><strong>type-spec needed</strong></td>
+				</tr>
+				<tr>
+					<td>0</td>
+					<td>PrimitiveType</td>
+					<td>A primitive type</td>
+					<td>The code of the primitive type</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>String</td>
+					<td>String class. type-spec is not needed.</td>
+					<td>Not needed</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>ObjectType</td>
+					<td>Object class. type-spec is not needed.</td>
+					<td>Not needed</td>
+				</tr>
+				<tr>
+					<td height="20">3</td>
+					<td height="20">RuntimeType</td>
+					<td height="20">A type from the .NET runtime (including arrays of .NET types)</td>
+					<td height="20">The name of the class</td>
+				</tr>
+				<tr>
+					<td>4</td>
+					<td>GenericType</td>
+					<td>Any other&nbsp;type (including arrays)</td>
+					<td>The name of the class and the id of the assembly</td>
+				</tr>
+				<tr>
+					<td>5</td>
+					<td>ArrayOfObject</td>
+					<td>Array of class Object</td>
+					<td>Not needed</td>
+				</tr>
+				<tr>
+					<td>6</td>
+					<td>ArrayOfString</td>
+					<td>Array of class String</td>
+					<td>Not needed</td>
+				</tr>
+				<tr>
+					<td>7</td>
+					<td>ArrayOfPrimitiveType</td>
+					<td>Array of primitive type</td>
+					<td>The code of the primitive type</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="type-spec"></a>
+		<h3>type-spec</h3>
+		<p>It is the name or the code of a type. To decode it, a <a href="#type-tag">type-tag</a>
+			value is needed. The following tables shows the format of type-spec for each 
+			type-tag value:</p>
+		<h4>type-tag = PrimitiveType or ArrayOfPrimitiveType</h4>
+		<p>
+			<table id="Table16" style="width: 560px; height: 14px;" border="1" cellpadding="1" cellspacing="1" width="560">
+				<tbody><tr>
+					<td width="119"><strong>Element</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td width="119"><a href="#primitive-type-code">primitive-type-code</a></td>
+					<td>
+						The code of the primitive type</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<h4>type-tag = RuntimeType</h4>
+		<p>
+			<table id="Table15" style="width: 560px; height: 14px;" border="1" cellpadding="1" cellspacing="1" width="560">
+				<tbody><tr>
+					<td><strong><strong>Element</strong></strong></td>
+					<td><strong><strong>Description</strong></strong></td>
+				</tr>
+				<tr>
+					<td><em><a href="#string">string</a></em></td>
+					<td>The name of the class, including the namespace</td>
+				</tr>
+			</tbody></table>
+			</p><h4>type-tag = GenericType</h4>
+		<p>
+			<table id="Table17" style="width: 560px; height: 14px;" border="1" cellpadding="1" cellspacing="1" width="560">
+				<tbody><tr>
+					<td><strong>Element</strong></td>
+					<td><strong><strong>Description</strong></strong></td>
+				</tr>
+				<tr>
+					<td><em><a href="#string">string</a></em></td>
+					<td>The name of the class, including the namespace</td>
+				</tr>
+				<tr>
+					<td>uint</td>
+					<td>Id of the assembly where the class is defined</td>
+				</tr>
+			</tbody></table>
+			</p><h3>
+				</h3><h4>Other type-tag</h4>
+			
+		<p>For other type-tag values, no type-spec is needed.</p>
+		<a name="method-call-flags"></a>
+		<h3>method-call-flags</h3>
+		<p>
+			<table id="Table3" border="1" cellpadding="1" cellspacing="1" width="600">
+				<tbody><tr>
+					<td><strong>Value</strong></td>
+					<td><strong>Label</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>NoArguments</td>
+					<td>No arguments included</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>PrimitiveArguments</td>
+					<td>Primitive type arguments</td>
+				</tr>
+				<tr>
+					<td>4</td>
+					<td>ArgumentsInSimpleArray</td>
+					<td>At least one out argument is not from a primitive type</td>
+				</tr>
+				<tr>
+					<td height="20">8</td>
+					<td height="20">ArgumentsInMultiArray</td>
+					<td height="20">At least one out argument is not from a primitive type and other 
+						info is included in the message (context or signature)</td>
+				</tr>
+				<tr>
+					<td>16</td>
+					<td>ExcludeLogicalCallContext</td>
+					<td>LogicalContext not included</td>
+				</tr>
+				<tr>
+					<td>32</td>
+					<td></td>
+					<td>???</td>
+				</tr>
+				<tr>
+					<td>64</td>
+					<td>IncludesLogicalCallContext</td>
+					<td>LogicalContext included</td>
+				</tr>
+				<tr>
+					<td>128</td>
+					<td>IncludesSignature</td>
+					<td>Signature is included in the message. It is only included when calling an 
+						overloaded method.</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="method-response-flags"></a>
+		<h3>method-response-flags</h3>
+		<p>
+			<table id="Table4" border="1" cellpadding="1" cellspacing="1" width="600">
+				<tbody><tr>
+					<td><strong>Value</strong></td>
+					<td width="190"><strong>Label</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td width="190">NoArguments</td>
+					<td>Response with no out arguments</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td width="190">PrimitiveArguments</td>
+					<td>
+						Response with primitive type out arguments</td>
+				</tr>
+				<tr>
+					<td>4</td>
+					<td width="190">ArgumentsInSimpleArray</td>
+					<td>Response with primitive type return value, and with at least one out argument 
+						that is not a primitive type.</td>
+				</tr>
+				<tr>
+					<td>8</td>
+					<td width="190">ArgumentsInMultiArray</td>
+					<td>Response with at least one out argument that is not a primitive type, and other 
+						info is included in the message (context or signature)</td>
+				</tr>
+				<tr>
+					<td>16</td>
+					<td width="190">ExcludeLogicalCallContext</td>
+					<td>LogicalContext not included</td>
+				</tr>
+				<tr>
+					<td>32</td>
+					<td width="190"></td>
+					<td>???</td>
+				</tr>
+				<tr>
+					<td>64</td>
+					<td width="190">IncludesLogicalCallContext</td>
+					<td>LogicalContext included</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="return-type-tag"></a>
+		<h3>return-type-tag</h3>
+		<p>
+			<table id="Table11" border="1" cellpadding="1" cellspacing="1" width="600">
+				<tbody><tr>
+					<td><strong>Value</strong></td>
+					<td><strong>Label</strong></td>
+					<td><strong>Description</strong></td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>Null</td>
+					<td>Null return value</td>
+				</tr>
+				<tr>
+					<td>8</td>
+					<td>PrimitiveType</td>
+					<td>Primitive type return value</td>
+				</tr>
+				<tr>
+					<td>16</td>
+					<td>ObjectType</td>
+					<td>Object instance return value</td>
+				</tr>
+				<tr>
+					<td>32</td>
+					<td>Exception</td>
+					<td>Method response is an exception</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<a name="primitive-type-code"></a>
+		<h3>primitive-type-code</h3>
+		<p>
+			<table id="Table19" border="1" cellpadding="1" cellspacing="1" width="320" height="171">
+				<tbody><tr>
+					<td width="45"><strong>Value</strong></td>
+					<td width="190"><strong>Label</strong></td>
+				</tr>
+				<tr>
+					<td width="45">1</td>
+					<td width="190">Boolean
+					</td>
+				</tr>
+				<tr>
+					<td width="45">2</td>
+					<td width="190">Byte</td>
+				</tr>
+				<tr>
+					<td width="45">3</td>
+					<td width="190">Char</td>
+				</tr>
+				<tr>
+					<td width="45">5</td>
+					<td width="190">Decimal</td>
+				</tr>
+				<tr>
+					<td width="45">6</td>
+					<td width="190">Double</td>
+				</tr>
+				<tr>
+					<td width="45">7</td>
+					<td width="190">Int16</td>
+				</tr>
+				<tr>
+					<td width="45">8</td>
+					<td width="190">Int32</td>
+				</tr>
+				<tr>
+					<td width="45">9</td>
+					<td width="190">Int64</td>
+				</tr>
+				<tr>
+					<td width="45">10</td>
+					<td width="190">SByte</td>
+				</tr>
+				<tr>
+					<td width="45">11</td>
+					<td width="190">Single</td>
+				</tr>
+				<tr>
+					<td width="45">13</td>
+					<td width="190">DateTime</td>
+				</tr>
+				<tr>
+					<td width="45">14</td>
+					<td width="190">UInt16</td>
+				</tr>
+				<tr>
+					<td width="45">15</td>
+					<td width="190">UInt32</td>
+				</tr>
+				<tr>
+					<td width="45">16</td>
+					<td width="190">UInt64</td>
+				</tr>
+				<tr>
+					<td width="45">18</td>
+					<td width="190">String</td>
+				</tr>
+			</tbody></table>
+		</p>
+		<hr width="100%" size="1">
+		<font size="1">2003 (C) Lluis Sanchez Gual&nbsp; (</font> <a href="mailto:lluis@novell.com">
+			<font size="1">lluis@novell.com</font></a><font size="1">)</font>
+		<p>&nbsp;</p>
+	</body></html>
