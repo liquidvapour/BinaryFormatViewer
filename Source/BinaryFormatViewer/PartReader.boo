@@ -123,7 +123,6 @@ class RuntimeObjectPartReader(ObjectReaderBase):
         return partCode == 4
 
 
-
 class ExternalObjectPartReader(ObjectReaderBase):
     def constructor(partProvider as PartProvider, primitiveTypeReader as PrimitiveTypeReader):
         super(partProvider, primitiveTypeReader)
@@ -154,7 +153,8 @@ class ExternalObjectPartReader(ObjectReaderBase):
         
     def CanRead(partCode as int):
         return partCode == 5
-        
+
+
 class ObjectReferencePartReader(PartReader):
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
         refId = binaryReader.ReadUInt32()
@@ -162,13 +162,15 @@ class ObjectReferencePartReader(PartReader):
         
     def CanRead(partCode as int):
         return partCode == 9
-        
+
+
 class NullValuePartReader(PartReader):
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
         return NullNode()
         
     def CanRead(partCode as int):
         return partCode == 10
+
 
 class StringPartReader(PartReader):
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
@@ -178,7 +180,8 @@ class StringPartReader(PartReader):
         
     def CanRead(partCode as int):
         return partCode == 6    
-        
+
+
 class GenericArrayReader(ObjectReaderBase):
     def constructor(partProvider as PartProvider, primitiveTypeReader as PrimitiveTypeReader):
         super(partProvider, primitiveTypeReader)
@@ -220,7 +223,26 @@ class GenericArrayReader(ObjectReaderBase):
             result += count
             
         return result
+
+
+class ArrayOfObjectPartReader(PartReader):
+    private _partProvider as PartProvider = null
+    
+    def constructor(partProvider as PartProvider):
+        _partProvider = partProvider
+//TODO RP implement ArrayOfObjectPart
+    def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
+        objectId = binaryReader.ReadUInt32()
+        numberOfElements = binaryReader.ReadUInt32()
+        elements = List[of Node]()
+        for i in range(numberOfElements):
+            elements.Add(_partProvider.ReadNextPart(binaryReader, context))
+            
+        return ArrayOfObjectNode(objectId, elements)
         
+    def CanRead(partCode as int):
+        return partCode == 16
+	
 
 class ArrayOfStringPartReader(PartReader):
     private _partProvider as PartProvider = null
@@ -240,12 +262,14 @@ class ArrayOfStringPartReader(PartReader):
     def CanRead(partCode as int):
         return partCode == 17    
 
+
 class EndPartReader(PartReader):
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
         return EndNode()
         
     def CanRead(partCode as int):
         return partCode == 11
+
 
 class ArrayFilterBytePartReader(PartReader):
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):

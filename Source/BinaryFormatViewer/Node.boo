@@ -173,6 +173,17 @@ class GenericArrayNode(IdentifiedNode, IHaveChildren):
         get:
             return _typeSpec
 
+class ArrayOfObjectNode(IdentifiedNode,IHaveChildren):
+    _nodes as List[of Node]
+    
+    def constructor(objectId as uint, elements as List[of Node]):
+        super(objectId)
+        _nodes = elements
+        
+    Values as List[of Node]:
+        get:
+            return _nodes
+
 class ArrayOfStringNode(IdentifiedNode,IHaveChildren):
     _nodes as List[of Node]
     

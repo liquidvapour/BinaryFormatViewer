@@ -46,7 +46,15 @@ class GeneralTypeTypeSpecReader(TypeSpecReader):
 		typeName = binaryReader.ReadString()
 		assemblyId = binaryReader.ReadInt32()
 		return GeneralTypeSpec(typeName, assemblyId)
+
+class ArrayOfObject(TypeSpecReader):
+	def CanRead(typeTag as byte) as bool:
+		return typeTag == 5
 		
+	def Read(binaryReader as System.IO.BinaryReader) as TypeSpec:
+		return ArrayOfObjectTypeSpec()
+		
+
 class StringArrayTypeSpecReader(TypeSpecReader):
 	def CanRead(typeTag as byte) as bool:
 		return typeTag == 6

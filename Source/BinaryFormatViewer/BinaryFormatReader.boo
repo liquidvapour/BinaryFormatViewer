@@ -20,11 +20,17 @@ class BinaryFormatterOutput:
     
 
 class BinaryFormatReader:
-    _partProvider = PartProvider()
+    private static logger = log4net.LogManager.GetLogger(BinaryFormatReader)
+    
+    private _partProvider = PartProvider()
+    
 
     def ReadFull(stream as System.IO.Stream):
+        logger.Info("Start ReadFull")	
         nodes = List[of Node]()
         context = ReadContext()
+        
+        
         using reader = System.IO.BinaryReader(stream):
             while true:
                 node = _partProvider.ReadNextPart(reader, context)

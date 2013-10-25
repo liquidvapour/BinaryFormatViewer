@@ -25,6 +25,9 @@ class StringTypeSpec(TypeSpec):
 class StringArrayTypeSpec(TypeSpec):
 	pass
 
+class ArrayOfObjectTypeSpec(TypeSpec):
+	pass
+
 class PrimitiveTypeSpec(TypeSpec):
 	[Property(TypeCode)]
 	_typeCode as byte

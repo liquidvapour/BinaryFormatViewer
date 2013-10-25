@@ -8,8 +8,10 @@
  */
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Input;
 using BinaryFormatViewer;
+using System.IO.Compression;
 
 namespace BinarySerializationViewer
 {
@@ -18,12 +20,29 @@ namespace BinarySerializationViewer
 	    public BinaryFormatterOutput LoadFile(string path)
 	    {
 	        BinaryFormatterOutput result = null;
-	        using (var file = System.IO.File.OpenRead(path))
+	        
+	        using (var unzipedStream = new MemoryStream())
 	        {
-	            result = new BinaryFormatReader().ReadFull(file);
-	            file.Close();
+	        
+		        using (var file = System.IO.File.OpenRead(path))
+	        	using (var s = new GZipStream(file, CompressionMode.Decompress)) 
+		        {
+		        	var buffer = new byte[1024];
+		        	var readBytes = 0;
+		        	do 
+		        	{
+		        		readBytes = s.Read(buffer, 0, buffer.Length);
+		        		unzipedStream.Write(buffer, 0, readBytes);
+		        	} while (readBytes == buffer.Length);
+		            s.Close();	            
+		            file.Close();
+		        }
+		        
+		        unzipedStream.Position = 0;
+		        
+		        result = new BinaryFormatReader().ReadFull(unzipedStream);
 	        }
-	        return result;
+            return result;
 	    }
 	}
 }
