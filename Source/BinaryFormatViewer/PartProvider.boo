@@ -33,7 +33,8 @@ class PartProvider:
         partReader = GetPartReader(partCode)
         node as Node
         if partReader:
-            node = partReader.Read(reader, context)            
+            node = partReader.Read(reader, context)
+            logger.DebugFormat("part read '{0}'.", node)
         return node
         
     private def GetPartReader(partCode as int):

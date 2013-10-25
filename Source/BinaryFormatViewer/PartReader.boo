@@ -21,7 +21,7 @@ class HeaderPartReader(PartReader):
     
     def CanRead(partCode as int):
         return partCode == 0
-
+        
 class RefTypeObjectPartReader(ObjectReaderBase):
     
     def constructor(partProvider as PartProvider, primitiveTypeReader as PrimitiveTypeReader):
@@ -64,7 +64,7 @@ class AssemblyPartReader(PartReader):
     
     def CanRead(partCode as int):
         return partCode == 12
-
+        
 abstract class ObjectReaderBase(PartReader):
     _typeSpecProvider = TypeSpecProvider()
     _partProvider as PartProvider = null
@@ -124,21 +124,32 @@ class RuntimeObjectPartReader(ObjectReaderBase):
 
 
 class ExternalObjectPartReader(ObjectReaderBase):
+    private static logger = log4net.LogManager.GetLogger(ExternalObjectPartReader)
+    
     def constructor(partProvider as PartProvider, primitiveTypeReader as PrimitiveTypeReader):
         super(partProvider, primitiveTypeReader)
     
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
+        logger.InfoFormat("Starting Read at: '{0}' -->.", binaryReader.BaseStream.Position)
         objectId = binaryReader.ReadUInt32()
+        logger.DebugFormat("ObjectId: '{0}'.", objectId)
+        
         name = binaryReader.ReadString()
+        logger.DebugFormat("Name: '{0}'.", name)
+        
         fieldCount = binaryReader.ReadUInt32()
+        logger.DebugFormat("fieldCount: '{0}'.", fieldCount)
         
         fieldNames = List[of string](fieldCount)
         for i in range(0, fieldCount):
-            fieldNames.Add(binaryReader.ReadString())
+            name = binaryReader.ReadString()            
+            fieldNames.Add(name)
+            logger.DebugFormat("field: '{0}', name: '{1}'.", i, name)
             
         typeSpecs = ReadTypeSpecs(binaryReader, fieldCount)
             
         assemblyId = binaryReader.ReadUInt32()
+        logger.DebugFormat("assemblyId: '{0}'.", assemblyId)
         
         nodes = List[of Node]()
         for typeSpec in typeSpecs:
@@ -148,7 +159,7 @@ class ExternalObjectPartReader(ObjectReaderBase):
         for i in range(fieldNames.Count):
             fieldNodes.Add(FieldNode(fieldNames[i], nodes[i], typeSpecs[i]))
             
-            
+        logger.InfoFormat("<-- End Read at: '{0}'.", binaryReader.BaseStream.Position)    
         return ObjectNode(objectId, name, assemblyId, fieldNodes)
         
     def CanRead(partCode as int):
@@ -172,7 +183,7 @@ class NullValuePartReader(PartReader):
         return partCode == 10
 
 
-class StringPartReader(PartReader):
+class StringPartReader(PartReader):    
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
         objectId = binaryReader.ReadUInt32()
         val = binaryReader.ReadString()

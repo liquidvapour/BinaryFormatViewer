@@ -52,6 +52,8 @@ abstract class PrimitiveTypeReaderFactoryBase:
         pass
 
 class PrimitiveTypeNodeFactory(PrimitiveTypeReaderFactoryBase):
+    private static logger = log4net.LogManager.GetLogger(PrimitiveTypeNodeFactory)
+    
     private _typeId as byte
     private _read as callable(BinaryReader) as Node
     
@@ -63,7 +65,9 @@ class PrimitiveTypeNodeFactory(PrimitiveTypeReaderFactoryBase):
         return _typeId == typeCode
         
     def Read(binaryReader as BinaryReader):
-        return _read(binaryReader)
+        result = _read(binaryReader)
+        logger.DebugFormat("Read Primitive value: '{0}'", result);
+        return result
     
         
         

@@ -28,7 +28,7 @@ public class Node:
     pass
 
 class ObjectReferenceNode(Node):
-    _refId as uint
+    private _refId as uint
     
     def constructor(refId as uint):
         _refId = refId
@@ -36,6 +36,9 @@ class ObjectReferenceNode(Node):
     RefId as uint:
         get:
             return _refId
+            
+    def ToString():
+        return string.Format("Ref: '{0}'", _refId)
 
 class AssemblyNode(IdentifiedNode):
     private _name as string
@@ -47,6 +50,9 @@ class AssemblyNode(IdentifiedNode):
     Name as string:
         get:
             return _name
+            
+    def ToString():
+        return string.Format("{0} name: '{1}'", super.ToString(), _name)
         
 class AssemblyRefNode(Node):
     private _id as uint
@@ -67,6 +73,9 @@ class IdentifiedNode(Node):
     Id as uint:
         get:
             return _id
+            
+    def ToString():
+        return string.Format("Id: '{0}'", _id)
 
 class RuntimeObjectNode(IdentifiedNode, IHaveChildren, IHaveTypeSpecs):
 
@@ -140,7 +149,7 @@ class ObjectNode(RuntimeObjectNode):
         
 
 class StringNode(IdentifiedNode):
-    _val as string
+    private _val as string
     
     def constructor(objectId as uint, val as string):
         super(objectId)
@@ -149,6 +158,9 @@ class StringNode(IdentifiedNode):
     Value as string:
         get:
             return _val
+            
+    def ToString():
+        return _val
 
 class GenericArrayNode(IdentifiedNode, IHaveChildren):
     _vals as List[of Node]
@@ -204,12 +216,17 @@ class ValueNode[of T](Node):
     Value as T:
         get:
             return _value
+            
+    def ToString():
+        return _value.ToString()
     
 class EndNode(Node):    
     pass
     
 class StartNode(Node):
-    pass
+    def ToString():
+        return "HEADER"
+    
 
 class ArrayFilterNode(Node):
     _value as uint
