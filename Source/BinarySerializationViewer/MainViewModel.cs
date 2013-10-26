@@ -15,9 +15,6 @@ using BinaryFormatViewer;
 
 namespace BinarySerializationViewer
 {
-    /// <summary>
-    /// Description of MainViewModel.
-    /// </summary>
     public sealed class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -45,11 +42,6 @@ namespace BinarySerializationViewer
                 OnPropertyChanged("FilePicker");
             }
         }
-        
-//        public Node[] Nodes
-//        {
-//            get { return new Node[] { NodeViewModel }; }
-//        }
         
         public Node NodeViewModel
         {

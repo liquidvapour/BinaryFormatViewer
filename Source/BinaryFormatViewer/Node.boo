@@ -1,6 +1,7 @@
 ﻿namespace BinaryFormatViewer
 
 import System
+import System.Text
 import System.Collections.Generic
 
 interface IHaveChildren:
@@ -38,7 +39,7 @@ class ObjectReferenceNode(Node):
             return _refId
             
     def ToString():
-        return string.Format("Ref: '{0}'", _refId)
+        return "ObjectReferenceNode RefId: '${_refId}'"
 
 class AssemblyNode(IdentifiedNode):
     private _name as string
@@ -52,7 +53,7 @@ class AssemblyNode(IdentifiedNode):
             return _name
             
     def ToString():
-        return string.Format("{0} name: '{1}'", super.ToString(), _name)
+        return "AssemblyNode\r\n${super.ToString()}\r\nName: '${_name}'"
         
 class AssemblyRefNode(Node):
     private _id as uint
@@ -63,6 +64,9 @@ class AssemblyRefNode(Node):
     Id as uint:
         get:
             return _id
+    
+    def ToString():
+        return "AssemblyRef: ${_id}"
         
 class IdentifiedNode(Node):
     _id as uint
@@ -75,15 +79,15 @@ class IdentifiedNode(Node):
             return _id
             
     def ToString():
-        return string.Format("Id: '{0}'", _id)
+        return "Id: '${_id}'"
 
 class RuntimeObjectNode(IdentifiedNode, IHaveChildren, IHaveTypeSpecs):
 
     [Property(Assembly)]
-    _assembly as Node
+    private _assembly as Node
 
-    _fieldValues as List[of FieldNode]
-    _name as string
+    private _fieldValues as List[of FieldNode]
+    private _name as string
     
     def constructor(id as uint, name as string, fields as List[of FieldNode]):
         self(id, name, fields, null)
@@ -93,16 +97,6 @@ class RuntimeObjectNode(IdentifiedNode, IHaveChildren, IHaveTypeSpecs):
         _fieldValues = fields
         _name = name
         _assembly = assembly
-        
-#    def constructor(id as uint, name as string, fields as Dictionary[of string, Node], typeSpecs as List[of TypeSpec]):
-#        fieldsList = List[of KeyValuePair[of string, Node]](fields)
-#        
-#        fieldValues = List[of Node]()
-#        
-#        for i in range(fieldsList.Count):
-#            fieldValues.Add(FieldNode(fieldsList[i].Key, fieldsList[i].Value, typeSpecs[i]))
-#
-#        self(id, name, fieldValues)
         
     Values as List[of Node]:
         get:
@@ -118,6 +112,22 @@ class RuntimeObjectNode(IdentifiedNode, IHaveChildren, IHaveTypeSpecs):
     Name as string:
         get:
             return _name
+            
+    def ToString() :
+        sb = StringBuilder()
+        sb.AppendLine("Runtime Object")
+        sb.AppendLine("--------------")
+        sb.AppendLine(super.ToString())
+        sb.AppendLine("Name: '${_name}'")
+        if _assembly:
+            sb.AppendLine("Assembly: '${_assembly.ToString()}'.")
+            
+        for field in Fields:
+            sb.AppendLine("field: ${field.ToString()}")
+            
+        sb.AppendLine("--------------")
+        return sb.ToString()
+        
             
 class FieldNode(Node):
     _value as Node
@@ -142,6 +152,9 @@ class FieldNode(Node):
     TypeSpec as TypeSpec:
         get:
             return _typeSpec
+    
+    def ToString():
+        return "${_name} of ${_typeSpec}: '${_value}'"
         
 class ObjectNode(RuntimeObjectNode):
     def constructor(id as uint, name as string, assemblyId as uint, fields as List[of FieldNode]):
@@ -218,7 +231,7 @@ class ValueNode[of T](Node):
             return _value
             
     def ToString():
-        return _value.ToString()
+        return "ValueNode of type '${GetType().Name}' with value: '${_value.ToString()}"
     
 class EndNode(Node):    
     pass

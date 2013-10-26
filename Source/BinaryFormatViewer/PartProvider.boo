@@ -28,19 +28,19 @@ class PartProvider:
 
     def ReadNextPart(reader as System.IO.BinaryReader, context as ReadContext):
         partCode as int = reader.ReadByte()
-        logger.DebugFormat("finding part for partCode: '{0}' at position: '{1}'.", partCode, reader.BaseStream.Position)
+        logger.Debug("Finding part for partCode: '${partCode}' at position: '${reader.BaseStream.Position}'.")
         
         partReader = GetPartReader(partCode)
         node as Node
         if partReader:
             node = partReader.Read(reader, context)
-            logger.DebugFormat("part read '{0}'.", node)
+            logger.Debug("Part read:\r\n${node}.")
         return node
         
     private def GetPartReader(partCode as int):
         for r in _partReaders:
             if r.CanRead(partCode):
-                logger.DebugFormat("found part reader '{0}' for partCode: '{1}'.", r.GetType().FullName, partCode)
+                logger.Debug("Found part reader '${r.GetType().FullName}' for partCode: '${partCode}'.")
                 return r
                 
         raise ArgumentException("No part reader for partCode: ${partCode}", "partCode")
