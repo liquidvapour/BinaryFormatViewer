@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.1.8805
+# SharpDevelop 4.4
 Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "BinaryFormatViewer", "BinaryFormatViewer\BinaryFormatViewer.booproj", "{3DB6F8A3-8894-4712-9198-04828DC171D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializationSpike", "SerializationSpike\SerializationSpike.csproj", "{76DEBE9E-768E-40B3-8CF5-5A8CEC59D855}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializationViewer", "BinarySerializationViewer\BinarySerializationViewer.csproj", "{23533D46-472A-472F-9496-36701CD5837B}"
 EndProject
@@ -20,10 +18,6 @@ Global
 		{3DB6F8A3-8894-4712-9198-04828DC171D0}.Debug|x86.ActiveCfg = Debug|x86
 		{3DB6F8A3-8894-4712-9198-04828DC171D0}.Release|x86.Build.0 = Release|x86
 		{3DB6F8A3-8894-4712-9198-04828DC171D0}.Release|x86.ActiveCfg = Release|x86
-		{76DEBE9E-768E-40B3-8CF5-5A8CEC59D855}.Debug|x86.Build.0 = Debug|x86
-		{76DEBE9E-768E-40B3-8CF5-5A8CEC59D855}.Debug|x86.ActiveCfg = Debug|x86
-		{76DEBE9E-768E-40B3-8CF5-5A8CEC59D855}.Release|x86.Build.0 = Release|x86
-		{76DEBE9E-768E-40B3-8CF5-5A8CEC59D855}.Release|x86.ActiveCfg = Release|x86
 		{23533D46-472A-472F-9496-36701CD5837B}.Debug|x86.Build.0 = Debug|x86
 		{23533D46-472A-472F-9496-36701CD5837B}.Debug|x86.ActiveCfg = Debug|x86
 		{23533D46-472A-472F-9496-36701CD5837B}.Release|x86.Build.0 = Release|x86

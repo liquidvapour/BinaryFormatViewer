@@ -142,8 +142,8 @@ class ExternalObjectPartReader(ObjectReaderBase):
         
         fieldNames = List[of string](fieldCount)
         for i in range(0, fieldCount):
-            name = binaryReader.ReadString()            
-            fieldNames.Add(name)
+            fieldName = binaryReader.ReadString()            
+            fieldNames.Add(fieldName)
             logger.DebugFormat("field: '{0}', name: '{1}'.", i, name)
             
         typeSpecs = ReadTypeSpecs(binaryReader, fieldCount)
@@ -199,7 +199,8 @@ class GenericArrayReader(ObjectReaderBase):
     
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
         objectId = binaryReader.ReadUInt32()
-        typeOfArray = binaryReader.ReadByte();
+        // 20114-08-20 RP: Worrying that this is not used.
+        typeOfArray = binaryReader.ReadByte()-;
         numberOfDimentions = binaryReader.ReadUInt32();
         
         elementCountPerDimention = List[of uint]()
