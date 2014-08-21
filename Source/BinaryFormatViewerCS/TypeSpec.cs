@@ -7,10 +7,7 @@ namespace BinaryFormatViewer
     {
         private string _name;
 
-        public TypeSpec()
-            : this(null)
-        {
-        }
+        public TypeSpec() : this(null) {}
 
         public TypeSpec(string name)
         {
