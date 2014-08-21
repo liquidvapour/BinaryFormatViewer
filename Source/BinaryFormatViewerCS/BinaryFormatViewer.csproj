@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\ra-el\Source\Repos\BinaryFormatViewer\Source\BinaryFormatViewer\bin\Debug\BinaryFormatViewer.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B29BEC63-BBCE-493B-A70D-665FF0FB065B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>BinaryFormatViewer</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <ApplicationVersion>1.0.5345.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>BinaryFormatViewer</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Boo.Lang, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Boo\Boo.Lang.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BinaryFormatterOutput.cs" />
+    <Compile Include="BinaryFormatReader.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="ObjectReferenceNode.cs" />
+    <Compile Include="AssemblyNode.cs" />
+    <Compile Include="AssemblyRefNode.cs" />
+    <Compile Include="IdentifiedNode.cs" />
+    <Compile Include="RuntimeObjectNode.cs" />
+    <Compile Include="FieldNode.cs" />
+    <Compile Include="ObjectNode.cs" />
+    <Compile Include="StringNode.cs" />
+    <Compile Include="GenericArrayNode.cs" />
+    <Compile Include="ArrayOfObjectNode.cs" />
+    <Compile Include="ArrayOfStringNode.cs" />
+    <Compile Include="ValueNode.cs" />
+    <Compile Include="EndNode.cs" />
+    <Compile Include="StartNode.cs" />
+    <Compile Include="ArrayFilterNode.cs" />
+    <Compile Include="NullNode.cs" />
+    <Compile Include="PartProvider.cs" />
+    <Compile Include="ReadContext.cs" />
+    <Compile Include="PartReader.cs" />
+    <Compile Include="HeaderPartReader.cs" />
+    <Compile Include="RefTypeObjectPartReader.cs" />
+    <Compile Include="AssemblyPartReader.cs" />
+    <Compile Include="ObjectReaderBase.cs" />
+    <Compile Include="RuntimeObjectPartReader.cs" />
+    <Compile Include="ExternalObjectPartReader.cs" />
+    <Compile Include="ObjectReferencePartReader.cs" />
+    <Compile Include="NullValuePartReader.cs" />
+    <Compile Include="StringPartReader.cs" />
+    <Compile Include="GenericArrayReader.cs" />
+    <Compile Include="ArrayOfObjectPartReader.cs" />
+    <Compile Include="ArrayOfStringPartReader.cs" />
+    <Compile Include="EndPartReader.cs" />
+    <Compile Include="ArrayFilterBytePartReader.cs" />
+    <Compile Include="BoxedPrimitiveTypePartReader.cs" />
+    <Compile Include="PrimitiveTypeReader.cs" />
+    <Compile Include="PrimitiveTypeNodeFactories.cs" />
+    <Compile Include="PrimitiveTypeReaderFactoryBase.cs" />
+    <Compile Include="PrimitiveTypeNodeFactory.cs" />
+    <Compile Include="TypeSpec.cs" />
+    <Compile Include="GeneralTypeSpec.cs" />
+    <Compile Include="ObjectTypeSpec.cs" />
+    <Compile Include="StringTypeSpec.cs" />
+    <Compile Include="StringArrayTypeSpec.cs" />
+    <Compile Include="ArrayOfObjectTypeSpec.cs" />
+    <Compile Include="PrimitiveTypeSpec.cs" />
+    <Compile Include="ArrayOfPrimitiveTypeSpec.cs" />
+    <Compile Include="RuntimeTypeSpec.cs" />
+    <Compile Include="TypeSpecProvider.cs" />
+    <Compile Include="TypeSpecReader.cs" />
+    <Compile Include="PrimitiveTypeSpecReader.cs" />
+    <Compile Include="StringTypeSpecReader.cs" />
+    <Compile Include="ObjectTypeSpecReader.cs" />
+    <Compile Include="RuntimeTypeSpecReader.cs" />
+    <Compile Include="GeneralTypeTypeSpecReader.cs" />
+    <Compile Include="ArrayOfObject.cs" />
+    <Compile Include="StringArrayTypeSpecReader.cs" />
+    <Compile Include="ArrayOfPrimitiveTypeSpecReader.cs" />
+    <Compile Include="IHaveChildren.cs" />
+    <Compile Include="IHaveTypeSpecs.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

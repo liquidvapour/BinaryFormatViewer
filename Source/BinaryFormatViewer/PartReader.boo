@@ -200,7 +200,7 @@ class GenericArrayReader(ObjectReaderBase):
     def Read(binaryReader as System.IO.BinaryReader, context as ReadContext):
         objectId = binaryReader.ReadUInt32()
         // 20114-08-20 RP: Worrying that this is not used.
-        typeOfArray = binaryReader.ReadByte()-;
+        typeOfArray = binaryReader.ReadByte();
         numberOfDimentions = binaryReader.ReadUInt32();
         
         elementCountPerDimention = List[of uint]()
