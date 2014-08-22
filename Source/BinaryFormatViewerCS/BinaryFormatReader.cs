@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Boo.Lang;
+using System.Linq;
 using log4net;
 
 namespace BinaryFormatViewer
@@ -20,12 +20,12 @@ namespace BinaryFormatViewer
         public BinaryFormatterOutput ReadFull(Stream stream)
         {
             logger.Info("Start ReadFull");
-            var nodes = new System.Collections.Generic.List<Node>();
+            var nodes = new List<Node>();
             var context = new ReadContext();
             BinaryReader reader;
             using (reader = new BinaryReader(stream))
             {
-                while (1 != 0)
+                while (true)
                 {
                     Node node = _partProvider.ReadNextPart(reader, context);
                     var identifiedNode = node as IdentifiedNode;
@@ -37,21 +37,11 @@ namespace BinaryFormatViewer
                 }
                 reader.Close();
             }
-            Hash idNodes = BuildObjectIdHash(nodes);
-            Hash hash = BuildAssemblyHash(nodes);
-            System.Collections.Generic.List<IdentifiedNode> identifiedNodes = GetIdentifiedNodes(nodes);
-            ResolveAssemblyReferences(nodes, hash);
-            ResolveReferences(nodes, idNodes);
-            return new BinaryFormatterOutput(GetFirstObjectNode(nodes), GetAssemblyList(hash), identifiedNodes);
-        }
 
-        public IEnumerable<AssemblyNode> GetAssemblyList(Hash assembliesHash)
-        {
-            // ISSUE: object of a compiler-generated type is created
-            foreach (AssemblyNode i in assembliesHash.Values)
-            {
-                yield return i;
-            }
+            IDictionary<uint, AssemblyNode> hash = BuildAssemblyHash(nodes);
+            ResolveAssemblyReferences(nodes, hash);
+            ResolveReferences(nodes);
+            return new BinaryFormatterOutput(GetFirstObjectNode(nodes), hash.Values, nodes.GetIdentifiedNodes());
         }
 
         public Node Read(Stream stream)
@@ -59,92 +49,30 @@ namespace BinaryFormatViewer
             return ReadFull(stream).MainNode;
         }
 
-        private Hash BuildAssemblyHash(System.Collections.Generic.List<Node> nodes)
+        private IDictionary<uint, AssemblyNode> BuildAssemblyHash(IEnumerable<Node> nodes)
         {
-            var result = new Hash();
-            // ISSUE: variable of a compiler-generated type
-            ForEachNodeIn(nodes, n =>
-            {
-                var assNode = n as AssemblyNode;
-                if (assNode != null)
-                {
-                    result.Add(assNode.Id, assNode);
-                }
-            });
-
-            return result;
+            return nodes.OfType<AssemblyNode>().ToDictionary(x => x.Id);
         }
 
-        private void ResolveAssemblyReferences(System.Collections.Generic.List<Node> nodes, Hash assembliesById)
+        private static void ResolveAssemblyReferences(List<Node> nodes, IDictionary<uint, AssemblyNode> assembliesById)
         {
         }
 
-        private Node GetFirstObjectNode(System.Collections.Generic.List<Node> nodes)
+        private static Node GetFirstObjectNode(IEnumerable<Node> nodes)
         {
-            int num = 0;
-            int count = nodes.Count;
-            if (count < 0)
-                throw new ArgumentOutOfRangeException("max");
-            while (num < count)
-            {
-                int index = num;
-                ++num;
-                if (!(nodes[index] is AssemblyNode) && !(nodes[index] is StartNode))
-                    return nodes[index];
-            }
-            return null;
+            return nodes.FirstOrDefault(x => !(x is AssemblyNode) && !(x is StartNode));
         }
 
-        private System.Collections.Generic.List<IdentifiedNode> GetIdentifiedNodes(
-            System.Collections.Generic.List<Node> nodes)
+
+        private IDictionary<uint, IdentifiedNode> BuildObjectIdHash(IEnumerable<Node> nodes)
         {
-            var identifiedNodes = new System.Collections.Generic.List<IdentifiedNode>();
-            ForEachIdentifiedNode(nodes, n => identifiedNodes.Add(n));
-            return identifiedNodes;
+            return nodes.GetIdentifiedNodes().ToDictionary(x =>x.Id);
         }
 
-        private Hash BuildObjectIdHash(System.Collections.Generic.List<Node> nodes)
-        {
-            var result = new Hash();
-            ForEachIdentifiedNode(nodes, n =>
-            {
-                if (!result.ContainsKey(n.Id))
-                {
-                    result.Add(n.Id, n);
-                }
-            });
-            return result;
-        }
 
-        private void ForEachIdentifiedNode(IEnumerable<Node> nodes, Action<IdentifiedNode> expr)
+        private void ResolveReferences(IList<Node> nodeList)
         {
-            ForEachNodeIn(nodes, n =>
-            {
-                var iNode = n as IdentifiedNode;
-                if (iNode != null)
-                {
-                    expr(iNode);
-                }
-            });
-        }
-
-        private void ForEachNodeIn(IEnumerable<Node> nodes, Action<Node> onEachNode)
-        {
-            if (onEachNode == null) throw new ArgumentNullException("onEachNode");
-
-            foreach (Node n in nodes)
-            {
-                onEachNode(n);
-                var parentNode = n as IHaveChildren;
-                if (parentNode != null)
-                {
-                    ForEachIdentifiedNode(parentNode.Values, onEachNode);
-                }
-            }
-        }
-
-        private void ResolveReferences(IList<Node> nodeList, Hash idNodes)
-        {
+            var idNodes = BuildObjectIdHash(nodeList);
             int resolves = 0;
             bool flag = false;
             while (!flag)
@@ -157,7 +85,7 @@ namespace BinaryFormatViewer
             }
         }
 
-        private void ResolveReferences(IList<FieldNode> nodeList, Hash idNodes, Stack<Node> resolutionStack,
+        private void ResolveReferences(IList<FieldNode> nodeList, IDictionary<uint, IdentifiedNode> idNodes, Stack<Node> resolutionStack,
             ref int resolves)
         {
             int num = 0;
@@ -207,16 +135,10 @@ namespace BinaryFormatViewer
             }
         }
 
-        private void ResolveReferences(IList<Node> nodeList, Hash idNodes, Stack<Node> resolutionStack, ref int resolves)
+        private void ResolveReferences(IList<Node> nodeList, IDictionary<uint, IdentifiedNode> idNodes, Stack<Node> resolutionStack, ref int resolves)
         {
-            int num = 0;
-            int count = nodeList.Count;
-            if (count < 0)
-                throw new ArgumentOutOfRangeException("max");
-            while (num < count)
+            foreach (var index in Enumerable.Range(0, nodeList.Count))
             {
-                int index = num;
-                ++num;
                 if (nodeList[index] is ArrayOfStringNode)
                 {
                     var arrayOfStringNode = (ArrayOfStringNode) nodeList[index];
@@ -255,5 +177,42 @@ namespace BinaryFormatViewer
                 }
             }
         }
+    }
+
+    public static class NodeExtentions
+    {
+        public static IEnumerable<IdentifiedNode> GetIdentifiedNodes(this IEnumerable<Node> nodes)
+        {
+            return nodes.OfType<IdentifiedNode>();
+        }
+
+        public static void ForEachIdentifiedNode(this IEnumerable<Node> nodes, Action<IdentifiedNode> expr)
+        {
+            nodes.ForEachNodeIn(n =>
+            {
+                var iNode = n as IdentifiedNode;
+                if (iNode != null)
+                {
+                    expr(iNode);
+                }
+            });
+        }
+
+        public static void ForEachNodeIn(this IEnumerable<Node> nodes, Action<Node> onEachNode)
+        {
+            if (onEachNode == null) throw new ArgumentNullException("onEachNode");
+
+            foreach (var n in nodes)
+            {
+                onEachNode(n);
+                var parentNode = n as IHaveChildren;
+                if (parentNode != null)
+                {
+                    parentNode.Values.ForEachIdentifiedNode(onEachNode);
+                }
+            }
+        }
+
+
     }
 }
