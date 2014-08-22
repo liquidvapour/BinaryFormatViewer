@@ -5,25 +5,16 @@ namespace BinaryFormatViewer
     [Serializable]
     public class StringNode : IdentifiedNode
     {
-        private string _val;
+        public string Value { get; private set; }
 
-        public string Value
+        public StringNode(uint objectId, string value) : base(objectId)
         {
-            get
-            {
-                return this._val;
-            }
-        }
-
-        public StringNode(uint objectId, string val)
-            : base(objectId)
-        {
-            this._val = val;
+            this.Value = value;
         }
 
         public override string ToString()
         {
-            return this._val;
+            return Value;
         }
     }
 }

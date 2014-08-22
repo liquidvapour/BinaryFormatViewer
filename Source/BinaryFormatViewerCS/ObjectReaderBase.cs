@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BinaryFormatViewer
 {
@@ -37,27 +38,20 @@ namespace BinaryFormatViewer
 
         protected List<TypeSpec> ReadTypeSpecs(BinaryReader binaryReader, uint fieldCount)
         {
-            List<int> list1 = new List<int>((int)fieldCount);
-            int num1 = 0;
-            int num2 = (int)fieldCount;
-            int num3 = 1;
-            if (num2 < num1)
-                num3 = -1;
-            while (num1 != num2)
+            var fieldCountInt32 = checked((int)fieldCount);
+            var typeTags = new List<byte>(fieldCountInt32);
+
+            foreach (var i in Enumerable.Range(0, fieldCountInt32))
             {
-                num1 += num3;
-                list1.Add((int)binaryReader.ReadByte());
+                typeTags.Add(binaryReader.ReadByte());
             }
-            List<TypeSpec> list2 = new List<TypeSpec>((int)fieldCount);
-            using (List<int>.Enumerator enumerator = list1.GetEnumerator())
+
+            List<TypeSpec> typeSpecs = new List<TypeSpec>(fieldCountInt32);
+            foreach (var tag in typeTags)
             {
-                while (enumerator.MoveNext())
-                {
-                    int current = enumerator.Current;
-                    list2.Add(this._typeSpecProvider.GetTypeSpecFor(checked((byte)current), binaryReader));
-                }
+                typeSpecs.Add(_typeSpecProvider.GetTypeSpecFor(tag, binaryReader));
             }
-            return list2;
+            return typeSpecs;
         }
 
         public abstract override Node Read(BinaryReader binaryReader, ReadContext context);

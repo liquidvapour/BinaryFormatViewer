@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BinaryFormatViewer
 {
@@ -12,45 +13,34 @@ namespace BinaryFormatViewer
         {
         }
 
-        //TODO: rewrite for each
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
             uint id = binaryReader.ReadUInt32();
             string name = binaryReader.ReadString();
+
             uint fieldCount = binaryReader.ReadUInt32();
-            List<string> list1 = new List<string>((int)fieldCount);
-            int num1 = 0;
-            int num2 = (int)fieldCount;
-            int num3 = 1;
-            if (num2 < num1)
-                num3 = -1;
-            while (num1 != num2)
+            List<string> fieldNames = new List<string>((int)fieldCount);
+
+            foreach (var i in Enumerable.Range(0, Convert.ToInt32(fieldCount)))
             {
-                num1 += num3;
-                list1.Add(binaryReader.ReadString());
+                fieldNames.Add(binaryReader.ReadString());
             }
-            List<TypeSpec> list2 = this.ReadTypeSpecs(binaryReader, fieldCount);
-            List<Node> list3 = new List<Node>();
-            using (List<TypeSpec>.Enumerator enumerator = list2.GetEnumerator())
+
+            List<TypeSpec> typeSpecs = this.ReadTypeSpecs(binaryReader, fieldCount);
+
+            List<Node> nodes = new List<Node>();
+            foreach (var typeSpec in typeSpecs)
             {
-                while (enumerator.MoveNext())
-                {
-                    TypeSpec current = enumerator.Current;
-                    list3.Add(this.GetNodeBy(binaryReader, current, context));
-                }
+                nodes.Add(this.GetNodeBy(binaryReader, typeSpec, context));
             }
-            List<FieldNode> fields = new List<FieldNode>();
-            int num4 = 0;
-            int count = list1.Count;
-            if (count < 0)
-                throw new ArgumentOutOfRangeException("max");
-            while (num4 < count)
+
+            List<FieldNode> fieldNodes = new List<FieldNode>();
+            foreach (var i in Enumerable.Range(0, fieldNames.Count))
             {
-                int index = num4;
-                ++num4;
-                fields.Add(new FieldNode(list1[index], list3[index], list2[index]));
+                fieldNodes.Add(new FieldNode(fieldNames[i], nodes[i], typeSpecs[i]));
             }
-            return (Node)new RuntimeObjectNode(id, name, fields);
+
+            return (Node)new RuntimeObjectNode(id, name, fieldNodes);
         }
 
         public override bool CanRead(int partCode)

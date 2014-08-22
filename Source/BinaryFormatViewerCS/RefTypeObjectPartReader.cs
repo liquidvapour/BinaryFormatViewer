@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BinaryFormatViewer
 {
@@ -17,32 +18,30 @@ namespace BinaryFormatViewer
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
             uint id = binaryReader.ReadUInt32();
-            uint index1 = binaryReader.ReadUInt32();
-            IHaveTypeSpecs haveTypeSpecs = (IHaveTypeSpecs)context.ExistingObjects[index1];
-            int num1 = 0;
-            AssemblyRefNode assemblyRefNode = haveTypeSpecs.Assembly as AssemblyRefNode;
+            uint typeMetaDataObjectId = binaryReader.ReadUInt32();
+
+            var metaDataObject = (IHaveTypeSpecs)context.ExistingObjects[typeMetaDataObjectId];
+
+            var assemblyId = 0U;
+            var assemblyRefNode = metaDataObject.Assembly as AssemblyRefNode;
             if (assemblyRefNode != null)
             {
-                num1 = (int)assemblyRefNode.Id;
+                assemblyId = assemblyRefNode.Id;
             }
             else
             {
-                AssemblyNode assemblyNode = haveTypeSpecs.Assembly as AssemblyNode;
-                if (assemblyNode != null)
-                    num1 = (int)assemblyNode.Id;
+                var assemblyInfo = metaDataObject.Assembly as AssemblyNode;
+                if (assemblyInfo != null) assemblyId = assemblyInfo.Id;
             }
-            Dictionary<string, Node> dictionary = new Dictionary<string, Node>();
-            int num2 = 0;
-            int count = haveTypeSpecs.Fields.Count;
-            if (count < 0)
-                throw new ArgumentOutOfRangeException("max");
-            while (num2 < count)
+
+            Dictionary<string, Node> fieldData = new Dictionary<string, Node>();
+
+            foreach (var i in Enumerable.Range(0, metaDataObject.Fields.Count))
             {
-                int index2 = num2;
-                ++num2;
-                dictionary.Add(haveTypeSpecs.Fields[index2].Name, this.GetNodeBy(binaryReader, haveTypeSpecs.Fields[index2].TypeSpec, context));
+                fieldData.Add(metaDataObject.Fields[i].Name, this.GetNodeBy(binaryReader, metaDataObject.Fields[i].TypeSpec, context));
             }
-            return (Node)new ObjectNode(id, haveTypeSpecs.Name, checked((uint)num1), haveTypeSpecs.Fields);
+
+            return new ObjectNode(id, metaDataObject.Name, assemblyId, metaDataObject.Fields);
         }
 
         public override bool CanRead(int partCode)

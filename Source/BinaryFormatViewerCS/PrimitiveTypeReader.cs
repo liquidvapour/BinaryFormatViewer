@@ -38,16 +38,12 @@ namespace BinaryFormatViewer
 
         private PrimitiveTypeReaderFactoryBase GetPrimitiveTypeReaderStrategy(byte typeCode)
         {
-            using (IEnumerator<PrimitiveTypeReaderFactoryBase> enumerator = this._strategies.GetEnumerator())
+            foreach (var strategy in _strategies)
             {
-                while (enumerator.MoveNext())
+                if (strategy.CanRead(typeCode))
                 {
-                    PrimitiveTypeReaderFactoryBase current = enumerator.Current;
-                    if (current.CanRead(typeCode))
-                    {
-                        PrimitiveTypeReader.logger.DebugFormat("Found PrimitiveTypeReader '{0}' for typeCode: '{1}'.", (object)current.GetType().FullName, (object)typeCode);
-                        return current;
-                    }
+                    PrimitiveTypeReader.logger.DebugFormat("Found PrimitiveTypeReader '{0}' for typeCode: '{1}'.", (object)strategy.GetType().FullName, (object)typeCode);
+                    return strategy;
                 }
             }
             throw new ArgumentException(new StringBuilder("Unhandled type code: ").Append((object)typeCode).ToString(), "typeCode");

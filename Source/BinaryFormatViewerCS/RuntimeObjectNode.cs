@@ -75,17 +75,15 @@ namespace BinaryFormatViewer
             stringBuilder.AppendLine("Runtime Object");
             stringBuilder.AppendLine("--------------");
             stringBuilder.AppendLine(base.ToString());
-            stringBuilder.AppendLine(new StringBuilder("Name: '").Append(this._name).Append("'").ToString());
+            stringBuilder.AppendLine(string.Format("Name: '{0}'", this._name));
             if (this._assembly != null)
-                stringBuilder.AppendLine(new StringBuilder("Assembly: '").Append(this._assembly.ToString()).Append("'.").ToString());
-            using (List<FieldNode>.Enumerator enumerator = this.Fields.GetEnumerator())
+                stringBuilder.AppendLine("Assembly: '" + this._assembly + "'.");
+
+            foreach (var current in Fields)
             {
-                while (enumerator.MoveNext())
-                {
-                    FieldNode current = enumerator.Current;
-                    stringBuilder.AppendLine(new StringBuilder("field: ").Append(current.ToString()).ToString());
-                }
+                stringBuilder.AppendLine(new StringBuilder("field: ").Append(current.ToString()).ToString());
             }
+
             stringBuilder.AppendLine("--------------");
             return stringBuilder.ToString();
         }

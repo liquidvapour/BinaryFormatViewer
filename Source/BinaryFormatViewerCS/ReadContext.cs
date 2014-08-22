@@ -6,23 +6,11 @@ namespace BinaryFormatViewer
     [Serializable]
     public class ReadContext
     {
-        private IDictionary<uint, Node> _existingObjects;
-
-        public IDictionary<uint, Node> ExistingObjects
-        {
-            get
-            {
-                return this._existingObjects;
-            }
-            set
-            {
-                this._existingObjects = value;
-            }
-        }
+        public IDictionary<uint, Node> ExistingObjects { get; set; }
 
         public ReadContext()
         {
-            this._existingObjects = (IDictionary<uint, Node>)new Dictionary<uint, Node>();
+            ExistingObjects = (IDictionary<uint, Node>)new Dictionary<uint, Node>();
         }
     }
 }
