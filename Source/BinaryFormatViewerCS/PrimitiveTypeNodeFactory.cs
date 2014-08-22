@@ -1,31 +1,31 @@
-﻿using log4net;
-using System;
+﻿using System;
 using System.IO;
+using log4net;
 
 namespace BinaryFormatViewer
 {
     [Serializable]
     public class PrimitiveTypeNodeFactory : PrimitiveTypeReaderFactoryBase
     {
-        private static ILog logger = LogManager.GetLogger(typeof(PrimitiveTypeNodeFactory));
-        private byte _typeId;
-        private Func<BinaryReader, Node> _read;
+        private static readonly ILog logger = LogManager.GetLogger(typeof (PrimitiveTypeNodeFactory));
+        private readonly Func<BinaryReader, Node> _read;
+        private readonly byte _typeId;
 
         public PrimitiveTypeNodeFactory(byte typeId, Func<BinaryReader, Node> read)
         {
-            this._typeId = typeId;
-            this._read = read;
+            _typeId = typeId;
+            _read = read;
         }
 
         public override bool CanRead(byte typeCode)
         {
-            return (int)this._typeId == (int)typeCode;
+            return _typeId == typeCode;
         }
 
         public override Node Read(BinaryReader binaryReader)
         {
-            Node node = this._read(binaryReader);
-            PrimitiveTypeNodeFactory.logger.DebugFormat("Read Primitive value: '{0}'", (object)node);
+            Node node = _read(binaryReader);
+            logger.DebugFormat("Read Primitive value: '{0}'", node);
             return node;
         }
     }

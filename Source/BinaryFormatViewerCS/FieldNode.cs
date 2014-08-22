@@ -9,51 +9,46 @@ using System.Text;
 
 namespace BinaryFormatViewer
 {
-  [Serializable]
-  public class FieldNode : Node
-  {
-    protected Node _value;
-    protected string _name;
-    protected TypeSpec _typeSpec;
-
-    public string Name
+    [Serializable]
+    public class FieldNode : Node
     {
-      get
-      {
-        return this._name;
-      }
-    }
+        protected string _name;
+        protected TypeSpec _typeSpec;
+        protected Node _value;
 
-    public Node Value
-    {
-      get
-      {
-        return this._value;
-      }
-      set
-      {
-        this._value = value;
-      }
-    }
+        public FieldNode(string name, Node value, TypeSpec typeSpec)
+        {
+            _name = name;
+            _value = value;
+            _typeSpec = typeSpec;
+        }
 
-    public TypeSpec TypeSpec
-    {
-      get
-      {
-        return this._typeSpec;
-      }
-    }
+        public string Name
+        {
+            get { return _name; }
+        }
 
-    public FieldNode(string name, Node value, TypeSpec typeSpec)
-    {
-      this._name = name;
-      this._value = value;
-      this._typeSpec = typeSpec;
-    }
+        public Node Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
 
-    public override string ToString()
-    {
-      return new StringBuilder().Append(this._name).Append(" of ").Append((object) this._typeSpec).Append(": '").Append((object) this._value).Append("'").ToString();
+        public TypeSpec TypeSpec
+        {
+            get { return _typeSpec; }
+        }
+
+        public override string ToString()
+        {
+            return
+                new StringBuilder().Append(_name)
+                    .Append(" of ")
+                    .Append(_typeSpec)
+                    .Append(": '")
+                    .Append(_value)
+                    .Append("'")
+                    .ToString();
+        }
     }
-  }
 }

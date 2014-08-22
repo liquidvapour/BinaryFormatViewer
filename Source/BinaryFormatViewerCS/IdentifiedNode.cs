@@ -9,27 +9,24 @@ using System.Text;
 
 namespace BinaryFormatViewer
 {
-  [Serializable]
-  public class IdentifiedNode : Node
-  {
-    protected uint _id;
-
-    public uint Id
+    [Serializable]
+    public class IdentifiedNode : Node
     {
-      get
-      {
-        return this._id;
-      }
-    }
+        protected uint _id;
 
-    public IdentifiedNode(uint id)
-    {
-      this._id = id;
-    }
+        public IdentifiedNode(uint id)
+        {
+            _id = id;
+        }
 
-    public override string ToString()
-    {
-      return new StringBuilder("Id: '").Append((object) this._id).Append("'").ToString();
+        public uint Id
+        {
+            get { return _id; }
+        }
+
+        public override string ToString()
+        {
+            return new StringBuilder("Id: '").Append((object) _id).Append("'").ToString();
+        }
     }
-  }
 }

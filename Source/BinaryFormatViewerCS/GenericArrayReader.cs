@@ -19,35 +19,38 @@ namespace BinaryFormatViewer
             binaryReader.ReadByte();
             uint numberOfDimentions = binaryReader.ReadUInt32();
 
-            List<uint> elementCountPerDimention = new List<uint>();
+            var elementCountPerDimention = new List<uint>();
 
-            foreach (var i in Enumerable.Range(0, (int)numberOfDimentions))
+            foreach (int i in Enumerable.Range(0, (int) numberOfDimentions))
             {
                 elementCountPerDimention.Add(binaryReader.ReadUInt32());
             }
 
-            var typeSpecs = this.ReadTypeSpecs(binaryReader, 1U);
+            List<TypeSpec> typeSpecs = ReadTypeSpecs(binaryReader, 1U);
 
             var nodes = new List<Node>();
 
             int nullItemsLeft = 0;
 
-            foreach (var i in Enumerable.Range(0, (int)GetTotalElementCount(elementCountPerDimention)))
+            foreach (int i in Enumerable.Range(0, (int) GetTotalElementCount(elementCountPerDimention)))
             {
                 Node node = null;
                 if (nullItemsLeft == 0)
                 {
-                    node = this.GetNodeBy(binaryReader, typeSpecs[0], context);
+                    node = GetNodeBy(binaryReader, typeSpecs[0], context);
                     var arrayFilterNode = node as ArrayFilterNode;
                     if (arrayFilterNode != null)
                     {
-                        nullItemsLeft = (int)arrayFilterNode.NumberOfNullItems;
+                        nullItemsLeft = (int) arrayFilterNode.NumberOfNullItems;
                     }
                 }
                 if (nullItemsLeft > 0)
                 {
                     node = new NullNode();
-                    checked { --nullItemsLeft; }
+                    checked
+                    {
+                        --nullItemsLeft;
+                    }
                 }
                 nodes.Add(node);
             }
@@ -68,7 +71,7 @@ namespace BinaryFormatViewer
                 while (enumerator.MoveNext())
                 {
                     uint current = enumerator.Current;
-                    num += (ulong)current;
+                    num += current;
                 }
             }
             return num;

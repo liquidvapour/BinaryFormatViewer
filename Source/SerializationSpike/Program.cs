@@ -6,92 +6,93 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+
 using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using BinaryFormatViewer;
-using NUnit.Framework;
 
 namespace SerializationSpike
 {
-
     [Serializable]
-    class A
+    internal class A
     {
-        public A() : this("hello") { }
-        
+        private readonly string msg = "hello";
+        private B bval = new B("bye");
+        private C cval = new C {Info = new[] {"hello", "world"}};
+
+        public A() : this("hello")
+        {
+        }
+
         public A(string msg)
         {
             this.msg = msg;
         }
-        
-        B bval = new B("bye");
-        C cval = new C() { Info = new string[] {"hello","world"}};
-        string msg = "hello";
-        
+
         public string Msg
         {
             get { return msg; }
         }
     }
-    
+
     [Serializable]
-    class B
+    internal class B
     {
-        string str;
-        
-        public string Str
-        {
-            get { return str; }
-        }
-        
+        private readonly string str;
+
         public B(string str)
         {
             this.str = str;
         }
+
+        public string Str
+        {
+            get { return str; }
+        }
     }
-    
+
     [Serializable]
-    struct C
+    internal struct C
     {
-        string[] info;
-        
+        private string[] info;
+
         public string[] Info
         {
             get { return info; }
             set { info = value; }
         }
     }
-    
+
     [Serializable]
-    class BoxedPrimitive
+    internal class BoxedPrimitive
     {
+        private object _val;
+
         public BoxedPrimitive()
         {
             _val = 11;
         }
-        
-        object _val;
-        
     }
-    
-    class MoreTests
+
+    internal class MoreTests
     {
-        
     }
-    
-    class Program
+
+    internal class Program
     {
         public static void Main(string[] args)
         {
-            using (var stream = new System.IO.MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 var test = new BoxedPrimitive();
-                
-                var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+
+                var bf = new BinaryFormatter();
                 bf.Serialize(stream, test);
-                
+
                 stream.Position = 0;
-                
-                var node = new BinaryFormatReader().Read(stream);
+
+                Node node = new BinaryFormatReader().Read(stream);
                 stream.Close();
             }
         }

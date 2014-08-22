@@ -5,11 +5,11 @@ namespace BinaryFormatViewer
     [Serializable]
     public class RuntimeTypeSpec : TypeSpec
     {
-        public string TypeName { get; set; }
-
         public RuntimeTypeSpec(string typeName)
         {
-            this.TypeName = typeName;
+            TypeName = typeName;
         }
+
+        public string TypeName { get; set; }
     }
 }

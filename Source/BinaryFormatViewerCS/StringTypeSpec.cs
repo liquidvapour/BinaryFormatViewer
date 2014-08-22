@@ -5,6 +5,8 @@ namespace BinaryFormatViewer
     [Serializable]
     public class StringTypeSpec : TypeSpec
     {
-        public StringTypeSpec() : base("String") { }
+        public StringTypeSpec() : base("String")
+        {
+        }
     }
 }

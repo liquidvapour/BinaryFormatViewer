@@ -8,12 +8,12 @@ using System.Collections.Generic;
 
 namespace BinaryFormatViewer
 {
-  public interface IHaveTypeSpecs
-  {
-    string Name { get; }
+    public interface IHaveTypeSpecs
+    {
+        string Name { get; }
 
-    Node Assembly { get; }
+        Node Assembly { get; }
 
-    List<FieldNode> Fields { get; }
-  }
+        List<FieldNode> Fields { get; }
+    }
 }

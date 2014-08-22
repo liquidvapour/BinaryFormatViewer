@@ -6,24 +6,21 @@ namespace BinaryFormatViewer
     [Serializable]
     public class ObjectReferenceNode : Node
     {
-        private uint _refId;
-
-        public uint RefId
-        {
-            get
-            {
-                return this._refId;
-            }
-        }
+        private readonly uint _refId;
 
         public ObjectReferenceNode(uint refId)
         {
-            this._refId = refId;
+            _refId = refId;
+        }
+
+        public uint RefId
+        {
+            get { return _refId; }
         }
 
         public override string ToString()
         {
-            return new StringBuilder("ObjectReferenceNode RefId: '").Append((object)this._refId).Append("'").ToString();
+            return new StringBuilder("ObjectReferenceNode RefId: '").Append((object) _refId).Append("'").ToString();
         }
     }
 }

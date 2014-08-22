@@ -13,7 +13,7 @@ namespace BinaryFormatViewer
 
         public override TypeSpec Read(BinaryReader binaryReader)
         {
-            return (TypeSpec)new ArrayOfPrimitiveTypeSpec(binaryReader.ReadByte());
+            return new ArrayOfPrimitiveTypeSpec(binaryReader.ReadByte());
         }
     }
 }

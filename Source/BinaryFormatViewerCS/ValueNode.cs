@@ -8,22 +8,23 @@ namespace BinaryFormatViewer
     {
         protected T _value;
 
-        public T Value
-        {
-            get
-            {
-                return this._value;
-            }
-        }
-
         public ValueNode(T va)
         {
-            this._value = va;
+            _value = va;
+        }
+
+        public T Value
+        {
+            get { return _value; }
         }
 
         public override string ToString()
         {
-            return new StringBuilder("ValueNode of type '").Append(this.GetType().Name).Append("' with value: '").Append(this._value.ToString()).ToString();
+            return
+                new StringBuilder("ValueNode of type '").Append(GetType().Name)
+                    .Append("' with value: '")
+                    .Append(_value)
+                    .ToString();
         }
     }
 }

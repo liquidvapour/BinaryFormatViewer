@@ -7,16 +7,29 @@ namespace BinaryFormatViewer
     [Serializable]
     public class RuntimeObjectNode : IdentifiedNode, IHaveChildren, IHaveTypeSpecs
     {
+        private readonly List<FieldNode> _fieldValues;
+        private readonly string _name;
         private Node _assembly;
-        private List<FieldNode> _fieldValues;
-        private string _name;
+
+        public RuntimeObjectNode(uint id, string name, List<FieldNode> fields)
+            : this(id, name, fields, null)
+        {
+        }
+
+        public RuntimeObjectNode(uint id, string name, List<FieldNode> fields, Node assembly)
+            : base(id)
+        {
+            _fieldValues = fields;
+            _name = name;
+            _assembly = assembly;
+        }
 
         public virtual List<Node> Values
         {
             get
             {
-                List<Node> list = new List<Node>();
-                using (List<FieldNode>.Enumerator enumerator = this.Fields.GetEnumerator())
+                var list = new List<Node>();
+                using (List<FieldNode>.Enumerator enumerator = Fields.GetEnumerator())
                 {
                     while (enumerator.MoveNext())
                     {
@@ -30,58 +43,33 @@ namespace BinaryFormatViewer
 
         public virtual List<FieldNode> Fields
         {
-            get
-            {
-                return this._fieldValues;
-            }
+            get { return _fieldValues; }
         }
 
         public virtual string Name
         {
-            get
-            {
-                return this._name;
-            }
+            get { return _name; }
         }
 
         public virtual Node Assembly
         {
-            get
-            {
-                return this._assembly;
-            }
-            set
-            {
-                this._assembly = value;
-            }
-        }
-
-        public RuntimeObjectNode(uint id, string name, List<FieldNode> fields)
-            : this(id, name, fields, (Node)null)
-        {
-        }
-
-        public RuntimeObjectNode(uint id, string name, List<FieldNode> fields, Node assembly)
-            : base(id)
-        {
-            this._fieldValues = fields;
-            this._name = name;
-            this._assembly = assembly;
+            get { return _assembly; }
+            set { _assembly = value; }
         }
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("Runtime Object");
             stringBuilder.AppendLine("--------------");
             stringBuilder.AppendLine(base.ToString());
-            stringBuilder.AppendLine(string.Format("Name: '{0}'", this._name));
-            if (this._assembly != null)
-                stringBuilder.AppendLine("Assembly: '" + this._assembly + "'.");
+            stringBuilder.AppendLine(string.Format("Name: '{0}'", _name));
+            if (_assembly != null)
+                stringBuilder.AppendLine("Assembly: '" + _assembly + "'.");
 
-            foreach (var current in Fields)
+            foreach (FieldNode current in Fields)
             {
-                stringBuilder.AppendLine(new StringBuilder("field: ").Append(current.ToString()).ToString());
+                stringBuilder.AppendLine(new StringBuilder("field: ").Append(current).ToString());
             }
 
             stringBuilder.AppendLine("--------------");

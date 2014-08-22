@@ -6,25 +6,27 @@ namespace BinaryFormatViewer
     [Serializable]
     public class AssemblyNode : IdentifiedNode
     {
-        private string _name;
-
-        public string Name
-        {
-            get
-            {
-                return this._name;
-            }
-        }
+        private readonly string _name;
 
         public AssemblyNode(uint id, string name)
             : base(id)
         {
-            this._name = name;
+            _name = name;
+        }
+
+        public string Name
+        {
+            get { return _name; }
         }
 
         public override string ToString()
         {
-            return new StringBuilder("AssemblyNode\r\n").Append(base.ToString()).Append("\r\nName: '").Append(this._name).Append("'").ToString();
+            return
+                new StringBuilder("AssemblyNode\r\n").Append(base.ToString())
+                    .Append("\r\nName: '")
+                    .Append(_name)
+                    .Append("'")
+                    .ToString();
         }
     }
 }

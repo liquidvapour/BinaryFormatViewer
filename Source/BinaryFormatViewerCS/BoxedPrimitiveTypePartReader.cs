@@ -10,12 +10,12 @@ namespace BinaryFormatViewer
 
         public BoxedPrimitiveTypePartReader(PrimitiveTypeReader primitiveTypeReader)
         {
-            this._primitiveTypeReader = primitiveTypeReader;
+            _primitiveTypeReader = primitiveTypeReader;
         }
 
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
-            return this._primitiveTypeReader.Read(binaryReader);
+            return _primitiveTypeReader.Read(binaryReader);
         }
 
         public override bool CanRead(int partCode)

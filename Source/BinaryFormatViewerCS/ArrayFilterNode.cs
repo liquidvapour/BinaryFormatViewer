@@ -5,19 +5,16 @@ namespace BinaryFormatViewer
     [Serializable]
     public class ArrayFilterNode : Node
     {
-        protected uint _value;
-
-        public uint NumberOfNullItems
-        {
-            get
-            {
-                return this._value;
-            }
-        }
+        private readonly uint _value;
 
         public ArrayFilterNode(uint val)
         {
-            this._value = val;
+            _value = val;
+        }
+
+        public uint NumberOfNullItems
+        {
+            get { return _value; }
         }
     }
 }

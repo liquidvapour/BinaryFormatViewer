@@ -8,46 +8,46 @@ namespace BinaryFormatViewer
     [Serializable]
     public abstract class ObjectReaderBase : PartReader
     {
-        protected TypeSpecProvider _typeSpecProvider;
         protected PartProvider _partProvider;
         protected PrimitiveTypeReader _primitiveTypeReader;
+        protected TypeSpecProvider _typeSpecProvider;
 
         protected ObjectReaderBase(PartProvider partProvider, PrimitiveTypeReader primitiveTypeReader)
         {
-            this._typeSpecProvider = new TypeSpecProvider();
-            this._partProvider = partProvider;
-            this._primitiveTypeReader = primitiveTypeReader;
+            _typeSpecProvider = new TypeSpecProvider();
+            _partProvider = partProvider;
+            _primitiveTypeReader = primitiveTypeReader;
         }
 
         protected Node GetNodeBy(BinaryReader binaryReader, TypeSpec typeSpec, ReadContext context)
         {
             if (typeSpec is PrimitiveTypeSpec)
             {
-                PrimitiveTypeSpec primitiveTypeSpec = typeSpec as PrimitiveTypeSpec;
-                return this._primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode);
+                var primitiveTypeSpec = typeSpec as PrimitiveTypeSpec;
+                return _primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode);
             }
             else
             {
                 if (!(typeSpec is ArrayOfPrimitiveTypeSpec))
-                    return this._partProvider.ReadNextPart(binaryReader, context);
+                    return _partProvider.ReadNextPart(binaryReader, context);
 
-                ArrayOfPrimitiveTypeSpec primitiveTypeSpec = typeSpec as ArrayOfPrimitiveTypeSpec;
-                return this._primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode);
+                var primitiveTypeSpec = typeSpec as ArrayOfPrimitiveTypeSpec;
+                return _primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode);
             }
         }
 
         protected List<TypeSpec> ReadTypeSpecs(BinaryReader binaryReader, uint fieldCount)
         {
-            var fieldCountInt32 = checked((int)fieldCount);
+            var fieldCountInt32 = checked((int) fieldCount);
             var typeTags = new List<byte>(fieldCountInt32);
 
-            foreach (var i in Enumerable.Range(0, fieldCountInt32))
+            foreach (int i in Enumerable.Range(0, fieldCountInt32))
             {
                 typeTags.Add(binaryReader.ReadByte());
             }
 
-            List<TypeSpec> typeSpecs = new List<TypeSpec>(fieldCountInt32);
-            foreach (var tag in typeTags)
+            var typeSpecs = new List<TypeSpec>(fieldCountInt32);
+            foreach (byte tag in typeTags)
             {
                 typeSpecs.Add(_typeSpecProvider.GetTypeSpecFor(tag, binaryReader));
             }

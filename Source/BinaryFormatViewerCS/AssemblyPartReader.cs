@@ -10,7 +10,7 @@ namespace BinaryFormatViewer
 
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
-            return (Node)new AssemblyNode(binaryReader.ReadUInt32(), binaryReader.ReadString());
+            return new AssemblyNode(binaryReader.ReadUInt32(), binaryReader.ReadString());
         }
 
         public override bool CanRead(int partCode)

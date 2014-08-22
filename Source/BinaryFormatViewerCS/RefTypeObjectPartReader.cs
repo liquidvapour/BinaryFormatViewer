@@ -6,7 +6,6 @@ using System.Linq;
 namespace BinaryFormatViewer
 {
     [Serializable]
-    
     public class RefTypeObjectPartReader : ObjectReaderBase
     {
         public RefTypeObjectPartReader(PartProvider partProvider, PrimitiveTypeReader primitiveTypeReader)
@@ -20,9 +19,9 @@ namespace BinaryFormatViewer
             uint id = binaryReader.ReadUInt32();
             uint typeMetaDataObjectId = binaryReader.ReadUInt32();
 
-            var metaDataObject = (IHaveTypeSpecs)context.ExistingObjects[typeMetaDataObjectId];
+            var metaDataObject = (IHaveTypeSpecs) context.ExistingObjects[typeMetaDataObjectId];
 
-            var assemblyId = 0U;
+            uint assemblyId = 0U;
             var assemblyRefNode = metaDataObject.Assembly as AssemblyRefNode;
             if (assemblyRefNode != null)
             {
@@ -34,11 +33,12 @@ namespace BinaryFormatViewer
                 if (assemblyInfo != null) assemblyId = assemblyInfo.Id;
             }
 
-            Dictionary<string, Node> fieldData = new Dictionary<string, Node>();
+            var fieldData = new Dictionary<string, Node>();
 
-            foreach (var i in Enumerable.Range(0, metaDataObject.Fields.Count))
+            foreach (int i in Enumerable.Range(0, metaDataObject.Fields.Count))
             {
-                fieldData.Add(metaDataObject.Fields[i].Name, this.GetNodeBy(binaryReader, metaDataObject.Fields[i].TypeSpec, context));
+                fieldData.Add(metaDataObject.Fields[i].Name,
+                    GetNodeBy(binaryReader, metaDataObject.Fields[i].TypeSpec, context));
             }
 
             return new ObjectNode(id, metaDataObject.Name, assemblyId, metaDataObject.Fields);

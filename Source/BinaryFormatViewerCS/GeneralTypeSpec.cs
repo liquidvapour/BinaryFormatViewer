@@ -8,40 +8,28 @@ using System;
 
 namespace BinaryFormatViewer
 {
-  [Serializable]
-  public class GeneralTypeSpec : TypeSpec
-  {
-    protected string _typeName;
-    protected int _assemblyId;
-
-    public string TypeName
+    [Serializable]
+    public class GeneralTypeSpec : TypeSpec
     {
-      get
-      {
-        return this._typeName;
-      }
-      set
-      {
-        this._typeName = value;
-      }
-    }
+        protected int _assemblyId;
+        protected string _typeName;
 
-    public int AssemblyId
-    {
-      get
-      {
-        return this._assemblyId;
-      }
-      set
-      {
-        this._assemblyId = value;
-      }
-    }
+        public GeneralTypeSpec(string typeName, int assemblyId)
+        {
+            _typeName = typeName;
+            _assemblyId = assemblyId;
+        }
 
-    public GeneralTypeSpec(string typeName, int assemblyId)
-    {
-      this._typeName = typeName;
-      this._assemblyId = assemblyId;
+        public string TypeName
+        {
+            get { return _typeName; }
+            set { _typeName = value; }
+        }
+
+        public int AssemblyId
+        {
+            get { return _assemblyId; }
+            set { _assemblyId = value; }
+        }
     }
-  }
 }

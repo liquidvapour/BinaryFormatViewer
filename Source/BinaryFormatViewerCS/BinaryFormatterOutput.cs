@@ -6,51 +6,18 @@ namespace BinaryFormatViewer
     [Serializable]
     public class BinaryFormatterOutput
     {
-        protected Node _mainNode;
-        protected List<AssemblyNode> _assemblies;
-        protected IEnumerable<IdentifiedNode> _identifiedNodes;
-
-        public Node MainNode
+        public BinaryFormatterOutput(Node mainNode, IEnumerable<AssemblyNode> assemblies,
+            IEnumerable<IdentifiedNode> identifiedNodes)
         {
-            get
-            {
-                return this._mainNode;
-            }
-            set
-            {
-                this._mainNode = value;
-            }
+            MainNode = mainNode;
+            Assemblies = new List<AssemblyNode>(assemblies);
+            IdentifiedNodes = new List<IdentifiedNode>(identifiedNodes);
         }
 
-        public List<AssemblyNode> Assemblies
-        {
-            get
-            {
-                return this._assemblies;
-            }
-            set
-            {
-                this._assemblies = value;
-            }
-        }
+        public Node MainNode { get; private set; }
 
-        public IEnumerable<IdentifiedNode> IdentifiedNodes
-        {
-            get
-            {
-                return this._identifiedNodes;
-            }
-            set
-            {
-                this._identifiedNodes = value;
-            }
-        }
+        public List<AssemblyNode> Assemblies { get; private set; }
 
-        public BinaryFormatterOutput(Node mainNode, IEnumerable<AssemblyNode> assemblies, IEnumerable<IdentifiedNode> identifiedNodes)
-        {
-            this._mainNode = mainNode;
-            this._assemblies = new List<AssemblyNode>(assemblies);
-            this._identifiedNodes = (IEnumerable<IdentifiedNode>)new List<IdentifiedNode>(identifiedNodes);
-        }
+        public IEnumerable<IdentifiedNode> IdentifiedNodes { get; private set; }
     }
 }

@@ -8,12 +8,12 @@ namespace BinaryFormatViewer
     {
         public override bool CanRead(byte typeTag)
         {
-            return (int)typeTag == 1;
+            return typeTag == 1;
         }
 
         public override TypeSpec Read(BinaryReader binaryReader)
         {
-            return (TypeSpec)new StringTypeSpec();
+            return new StringTypeSpec();
         }
     }
 }

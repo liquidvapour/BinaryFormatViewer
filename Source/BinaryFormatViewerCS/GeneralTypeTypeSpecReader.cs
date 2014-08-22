@@ -9,17 +9,17 @@ using System.IO;
 
 namespace BinaryFormatViewer
 {
-  [Serializable]
-  public class GeneralTypeTypeSpecReader : TypeSpecReader
-  {
-    public override bool CanRead(byte typeTag)
+    [Serializable]
+    public class GeneralTypeTypeSpecReader : TypeSpecReader
     {
-      return (int) typeTag == 4;
-    }
+        public override bool CanRead(byte typeTag)
+        {
+            return typeTag == 4;
+        }
 
-    public override TypeSpec Read(BinaryReader binaryReader)
-    {
-      return (TypeSpec) new GeneralTypeSpec(binaryReader.ReadString(), binaryReader.ReadInt32());
+        public override TypeSpec Read(BinaryReader binaryReader)
+        {
+            return new GeneralTypeSpec(binaryReader.ReadString(), binaryReader.ReadInt32());
+        }
     }
-  }
 }

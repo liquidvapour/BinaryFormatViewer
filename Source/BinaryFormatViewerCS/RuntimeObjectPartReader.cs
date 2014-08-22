@@ -19,28 +19,28 @@ namespace BinaryFormatViewer
             string name = binaryReader.ReadString();
 
             uint fieldCount = binaryReader.ReadUInt32();
-            List<string> fieldNames = new List<string>((int)fieldCount);
+            var fieldNames = new List<string>((int) fieldCount);
 
-            foreach (var i in Enumerable.Range(0, Convert.ToInt32(fieldCount)))
+            foreach (int i in Enumerable.Range(0, Convert.ToInt32(fieldCount)))
             {
                 fieldNames.Add(binaryReader.ReadString());
             }
 
-            List<TypeSpec> typeSpecs = this.ReadTypeSpecs(binaryReader, fieldCount);
+            List<TypeSpec> typeSpecs = ReadTypeSpecs(binaryReader, fieldCount);
 
-            List<Node> nodes = new List<Node>();
-            foreach (var typeSpec in typeSpecs)
+            var nodes = new List<Node>();
+            foreach (TypeSpec typeSpec in typeSpecs)
             {
-                nodes.Add(this.GetNodeBy(binaryReader, typeSpec, context));
+                nodes.Add(GetNodeBy(binaryReader, typeSpec, context));
             }
 
-            List<FieldNode> fieldNodes = new List<FieldNode>();
-            foreach (var i in Enumerable.Range(0, fieldNames.Count))
+            var fieldNodes = new List<FieldNode>();
+            foreach (int i in Enumerable.Range(0, fieldNames.Count))
             {
                 fieldNodes.Add(new FieldNode(fieldNames[i], nodes[i], typeSpecs[i]));
             }
 
-            return (Node)new RuntimeObjectNode(id, name, fieldNodes);
+            return new RuntimeObjectNode(id, name, fieldNodes);
         }
 
         public override bool CanRead(int partCode)

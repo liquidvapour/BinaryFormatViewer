@@ -8,7 +8,7 @@ namespace BinaryFormatViewer
     {
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
-            return (Node)new ArrayFilterNode((uint)binaryReader.ReadByte());
+            return new ArrayFilterNode(binaryReader.ReadByte());
         }
 
         public override bool CanRead(int partCode)

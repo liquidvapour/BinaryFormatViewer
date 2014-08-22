@@ -1,57 +1,61 @@
-﻿using Boo.Lang;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
+using log4net;
 
 namespace BinaryFormatViewer
 {
     [Serializable]
     public class PartProvider
     {
-        private static ILog logger = LogManager.GetLogger(typeof(PartProvider));
-        private System.Collections.Generic.List<PartReader> _partReaders;
+        private static readonly ILog logger = LogManager.GetLogger(typeof (PartProvider));
+        private readonly List<PartReader> _partReaders;
         private PrimitiveTypeReader _primitiveTypeReader;
 
         public PartProvider()
         {
-            this._primitiveTypeReader = new PrimitiveTypeReader();
-            this._partReaders = new System.Collections.Generic.List<PartReader>();
-            this._partReaders.Add((PartReader)new HeaderPartReader());
-            this._partReaders.Add((PartReader)new RefTypeObjectPartReader(this, this._primitiveTypeReader));
-            this._partReaders.Add((PartReader)new AssemblyPartReader());
-            this._partReaders.Add((PartReader)new RuntimeObjectPartReader(this, this._primitiveTypeReader));
-            this._partReaders.Add((PartReader)new ExternalObjectPartReader(this, this._primitiveTypeReader));
-            this._partReaders.Add((PartReader)new ObjectReferencePartReader());
-            this._partReaders.Add((PartReader)new NullValuePartReader());
-            this._partReaders.Add((PartReader)new GenericArrayReader(this, this._primitiveTypeReader));
-            this._partReaders.Add((PartReader)new StringPartReader());
-            this._partReaders.Add((PartReader)new ArrayOfStringPartReader(this));
-            this._partReaders.Add((PartReader)new ArrayOfObjectPartReader(this));
-            this._partReaders.Add((PartReader)new BoxedPrimitiveTypePartReader(this._primitiveTypeReader));
-            this._partReaders.Add((PartReader)new EndPartReader());
-            this._partReaders.Add((PartReader)new ArrayFilterBytePartReader());
+            _primitiveTypeReader = new PrimitiveTypeReader();
+            _partReaders = new List<PartReader>();
+            _partReaders.Add(new HeaderPartReader());
+            _partReaders.Add(new RefTypeObjectPartReader(this, _primitiveTypeReader));
+            _partReaders.Add(new AssemblyPartReader());
+            _partReaders.Add(new RuntimeObjectPartReader(this, _primitiveTypeReader));
+            _partReaders.Add(new ExternalObjectPartReader(this, _primitiveTypeReader));
+            _partReaders.Add(new ObjectReferencePartReader());
+            _partReaders.Add(new NullValuePartReader());
+            _partReaders.Add(new GenericArrayReader(this, _primitiveTypeReader));
+            _partReaders.Add(new StringPartReader());
+            _partReaders.Add(new ArrayOfStringPartReader(this));
+            _partReaders.Add(new ArrayOfObjectPartReader(this));
+            _partReaders.Add(new BoxedPrimitiveTypePartReader(_primitiveTypeReader));
+            _partReaders.Add(new EndPartReader());
+            _partReaders.Add(new ArrayFilterBytePartReader());
         }
 
         public Node ReadNextPart(BinaryReader reader, ReadContext context)
         {
-            int partCode = (int)reader.ReadByte();
-            PartProvider.logger.Debug((object)new StringBuilder("Finding part for partCode: '").Append((object)partCode).Append("' at position: '").Append((object)reader.BaseStream.Position).Append("'.").ToString());
-            PartReader partReader = this.GetPartReader(partCode);
-            Node node = (Node)null;
+            int partCode = reader.ReadByte();
+            logger.Debug(
+                new StringBuilder("Finding part for partCode: '").Append((object) partCode)
+                    .Append("' at position: '")
+                    .Append((object) reader.BaseStream.Position)
+                    .Append("'.")
+                    .ToString());
+            PartReader partReader = GetPartReader(partCode);
+            Node node = null;
             if (partReader != null)
             {
                 node = partReader.Read(reader, context);
-                PartProvider.logger.Debug((object)new StringBuilder("Part read:\r\n").Append((object)node).Append(".").ToString());
+                logger.Debug(new StringBuilder("Part read:\r\n").Append(node).Append(".").ToString());
             }
             return node;
         }
 
         private PartReader GetPartReader(int partCode)
         {
-            var reader = this._partReaders.FirstOrDefault(x => x.CanRead(partCode));
+            PartReader reader = _partReaders.FirstOrDefault(x => x.CanRead(partCode));
 
             if (reader == null)
             {

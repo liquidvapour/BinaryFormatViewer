@@ -8,18 +8,15 @@ namespace BinaryFormatViewer
     {
         protected List<Node> _nodes;
 
-        public virtual List<Node> Values
-        {
-            get
-            {
-                return this._nodes;
-            }
-        }
-
         public ArrayOfStringNode(uint objectId, List<Node> elements)
             : base(objectId)
         {
-            this._nodes = elements;
+            _nodes = elements;
+        }
+
+        public virtual List<Node> Values
+        {
+            get { return _nodes; }
         }
     }
 }

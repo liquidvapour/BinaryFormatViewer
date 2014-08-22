@@ -9,18 +9,18 @@ using System.IO;
 
 namespace BinaryFormatViewer
 {
-  [Serializable]
-  public class HeaderPartReader : PartReader
-  {
-    public override Node Read(BinaryReader binaryReader, ReadContext context)
+    [Serializable]
+    public class HeaderPartReader : PartReader
     {
-      binaryReader.ReadBytes(16);
-      return (Node) new StartNode();
-    }
+        public override Node Read(BinaryReader binaryReader, ReadContext context)
+        {
+            binaryReader.ReadBytes(16);
+            return new StartNode();
+        }
 
-    public override bool CanRead(int partCode)
-    {
-      return partCode == 0;
+        public override bool CanRead(int partCode)
+        {
+            return partCode == 0;
+        }
     }
-  }
 }
