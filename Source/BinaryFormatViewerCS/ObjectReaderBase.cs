@@ -8,9 +8,9 @@ namespace BinaryFormatViewer
     [Serializable]
     public abstract class ObjectReaderBase : PartReader
     {
-        protected PartProvider _partProvider;
-        protected PrimitiveTypeReader _primitiveTypeReader;
-        protected TypeSpecProvider _typeSpecProvider;
+        private readonly PartProvider _partProvider;
+        private readonly PrimitiveTypeReader _primitiveTypeReader;
+        private readonly TypeSpecProvider _typeSpecProvider;
 
         protected ObjectReaderBase(PartProvider partProvider, PrimitiveTypeReader primitiveTypeReader)
         {
@@ -39,19 +39,9 @@ namespace BinaryFormatViewer
         protected List<TypeSpec> ReadTypeSpecs(BinaryReader binaryReader, uint fieldCount)
         {
             var fieldCountInt32 = checked((int) fieldCount);
-            var typeTags = new List<byte>(fieldCountInt32);
+            var typeTags = Enumerable.Range(0, fieldCountInt32).Select(i => binaryReader.ReadByte()).ToList();
 
-            foreach (int i in Enumerable.Range(0, fieldCountInt32))
-            {
-                typeTags.Add(binaryReader.ReadByte());
-            }
-
-            var typeSpecs = new List<TypeSpec>(fieldCountInt32);
-            foreach (byte tag in typeTags)
-            {
-                typeSpecs.Add(_typeSpecProvider.GetTypeSpecFor(tag, binaryReader));
-            }
-            return typeSpecs;
+            return new List<TypeSpec>(typeTags.Select(tag => _typeSpecProvider.GetTypeSpecFor(tag, binaryReader)));
         }
 
         public abstract override Node Read(BinaryReader binaryReader, ReadContext context);

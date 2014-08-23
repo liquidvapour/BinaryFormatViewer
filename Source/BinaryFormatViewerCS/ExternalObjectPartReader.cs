@@ -39,18 +39,9 @@ namespace BinaryFormatViewer
             uint assemblyId = binaryReader.ReadUInt32();
             logger.DebugFormat("assemblyId: '{0}'.", assemblyId);
 
-            var nodes = new List<Node>();
-            foreach (TypeSpec current in typeSpecs)
-            {
-                nodes.Add(GetNodeBy(binaryReader, current, context));
-            }
+            var nodes = typeSpecs.Select(current => GetNodeBy(binaryReader, current, context)).ToList();
 
-            var fieldNodes = new List<FieldNode>();
-
-            foreach (int i in Enumerable.Range(0, fieldNames.Count))
-            {
-                fieldNodes.Add(new FieldNode(fieldNames[i], nodes[i], typeSpecs[i]));
-            }
+            var fieldNodes = Enumerable.Range(0, fieldNames.Count).Select(i => new FieldNode(fieldNames[i], nodes[i], typeSpecs[i])).ToList();
 
             logger.InfoFormat("<-- End Read at: '{0}'.", binaryReader.BaseStream.Position);
             return new ObjectNode(id, name, assemblyId, fieldNodes);
