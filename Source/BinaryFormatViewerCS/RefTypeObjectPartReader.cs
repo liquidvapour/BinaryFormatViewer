@@ -33,15 +33,12 @@ namespace BinaryFormatViewer
                 if (assemblyInfo != null) assemblyId = assemblyInfo.Id;
             }
 
-            var fieldData = new Dictionary<string, Node>();
+            var fieldData = Enumerable.Range(0, metaDataObject.Fields.Count)
+                .Select(i => new FieldNode(metaDataObject.Fields[i].Name, GetNodeBy(binaryReader, metaDataObject.Fields[i].TypeSpec, context), metaDataObject.Fields[i].TypeSpec))
+                .ToList();
 
-            foreach (int i in Enumerable.Range(0, metaDataObject.Fields.Count))
-            {
-                fieldData.Add(metaDataObject.Fields[i].Name,
-                    GetNodeBy(binaryReader, metaDataObject.Fields[i].TypeSpec, context));
-            }
 
-            return new ObjectNode(id, metaDataObject.Name, assemblyId, metaDataObject.Fields);
+            return new ObjectNode(id, metaDataObject.Name, assemblyId, fieldData);
         }
 
         public override bool CanRead(int partCode)

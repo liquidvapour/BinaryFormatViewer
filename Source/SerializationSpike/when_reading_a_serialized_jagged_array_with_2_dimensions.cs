@@ -1,14 +1,4 @@
-﻿/*
- * Created by SharpDevelop.
- * User: ra-el
- * Date: 16/08/2010
- * Time: 09:25
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-
-using System.Diagnostics;
-using BinaryFormatViewer;
+﻿using BinaryFormatViewer;
 using NUnit.Framework;
 
 namespace SerializationSpike

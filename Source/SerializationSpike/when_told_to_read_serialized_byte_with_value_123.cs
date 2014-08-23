@@ -22,7 +22,7 @@ namespace SerializationSpike
 
         protected override string GetFileName()
         {
-            return "boolean_test.bin";
+            return "byte_test.bin";
         }
 
         [Test]

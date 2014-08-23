@@ -16,10 +16,12 @@ namespace SerializationSpike
     [TestFixture]
     public class when_told_to_read_serialized_date_time_with_value_min_value : BinarySerializedObjectSpec
     {
+        private DateTime time;
+
         protected override object GetObjectToSerialize()
         {
-            DateTime result = DateTime.MinValue;
-            return result;
+            time = DateTime.Now;
+            return time;
         }
 
         protected override string GetFileName()
@@ -46,7 +48,7 @@ namespace SerializationSpike
         {
             var runtimeObjectNode = (RuntimeObjectNode) result;
             var node = FindNodeWithNameIn("ticks", runtimeObjectNode) as ValueNode<long>;
-            Assert.That(node.Value, Is.EqualTo(0));
+            Assert.That(node.Value, Is.EqualTo(time.Ticks));
         }
     }
 }

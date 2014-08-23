@@ -96,6 +96,7 @@
     <Compile Include="when_reading_a_serialized_array_with_2_dimensions.cs" />
     <Compile Include="when_reading_a_serialized_array_with_an_instance_at_index_2_and_3_null_values.cs" />
     <Compile Include="when_reading_a_serialized_jagged_array_with_2_dimensions.cs" />
+    <Compile Include="when_reading_a_serialized_TestItem.cs" />
     <Compile Include="when_told_to_read_blob_bin.cs" />
     <Compile Include="when_told_to_read_boxed_primitives.cs" />
     <Compile Include="when_told_to_read_seialized_class_that_contains_a_date_time.cs" />
