@@ -49,10 +49,12 @@
     <Compile Include="BinaryFormatterOutput.cs" />
     <Compile Include="BinaryFormatReader.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="NodeExtentions.cs" />
     <Compile Include="ObjectReferenceNode.cs" />
     <Compile Include="AssemblyNode.cs" />
     <Compile Include="AssemblyRefNode.cs" />
     <Compile Include="IdentifiedNode.cs" />
+    <Compile Include="ReferenceResolver.cs" />
     <Compile Include="RuntimeObjectNode.cs" />
     <Compile Include="FieldNode.cs" />
     <Compile Include="ObjectNode.cs" />

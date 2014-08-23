@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -19,12 +18,10 @@ namespace BinaryFormatViewer
         {
             uint objectId = binaryReader.ReadUInt32();
             uint numberOfElements = binaryReader.ReadUInt32();
-            var elements = new List<Node>();
 
-            foreach (int i in Enumerable.Range(0, Convert.ToInt32(numberOfElements)))
-            {
-                elements.Add(_partProvider.ReadNextPart(binaryReader, context));
-            }
+            var elements = Enumerable.Range(0, Convert.ToInt32(numberOfElements))
+                .Select(i => _partProvider.ReadNextPart(binaryReader, context))
+                .ToList();
 
             return new ArrayOfObjectNode(objectId, elements);
         }

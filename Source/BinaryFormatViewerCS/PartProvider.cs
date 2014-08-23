@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using log4net;
 
 namespace BinaryFormatViewer
@@ -11,45 +10,47 @@ namespace BinaryFormatViewer
     public class PartProvider
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof (PartProvider));
-        private readonly List<PartReader> _partReaders;
-        private PrimitiveTypeReader _primitiveTypeReader;
+        private readonly IEnumerable<PartReader> _partReaders;
 
         public PartProvider()
         {
-            _primitiveTypeReader = new PrimitiveTypeReader();
-            _partReaders = new List<PartReader>();
-            _partReaders.Add(new HeaderPartReader());
-            _partReaders.Add(new RefTypeObjectPartReader(this, _primitiveTypeReader));
-            _partReaders.Add(new AssemblyPartReader());
-            _partReaders.Add(new RuntimeObjectPartReader(this, _primitiveTypeReader));
-            _partReaders.Add(new ExternalObjectPartReader(this, _primitiveTypeReader));
-            _partReaders.Add(new ObjectReferencePartReader());
-            _partReaders.Add(new NullValuePartReader());
-            _partReaders.Add(new GenericArrayReader(this, _primitiveTypeReader));
-            _partReaders.Add(new StringPartReader());
-            _partReaders.Add(new ArrayOfStringPartReader(this));
-            _partReaders.Add(new ArrayOfObjectPartReader(this));
-            _partReaders.Add(new BoxedPrimitiveTypePartReader(_primitiveTypeReader));
-            _partReaders.Add(new EndPartReader());
-            _partReaders.Add(new ArrayFilterBytePartReader());
+            var primitiveTypeReader = new PrimitiveTypeReader();
+            _partReaders = new List<PartReader>
+            {
+                new HeaderPartReader(),
+                new RefTypeObjectPartReader(this, primitiveTypeReader),
+                new AssemblyPartReader(),
+                new RuntimeObjectPartReader(this, primitiveTypeReader),
+                new ExternalObjectPartReader(this, primitiveTypeReader),
+                new ObjectReferencePartReader(),
+                new NullValuePartReader(),
+                new GenericArrayReader(this, primitiveTypeReader),
+                new StringPartReader(),
+                new ArrayOfStringPartReader(this),
+                new ArrayOfObjectPartReader(this),
+                new BoxedPrimitiveTypePartReader(primitiveTypeReader),
+                new EndPartReader(),
+                new ArrayFilterBytePartReader()
+            };
+        }
+
+        public IEnumerable<Node> EnumerateParts(BinaryReader reader, ReadContext context)
+        {
+            Node node = null;
+            while (!(node is EndNode))
+            {
+                node = ReadNextPart(reader, context);
+                yield return node;                
+            }
         }
 
         public Node ReadNextPart(BinaryReader reader, ReadContext context)
         {
             int partCode = reader.ReadByte();
-            logger.Debug(
-                new StringBuilder("Finding part for partCode: '").Append((object) partCode)
-                    .Append("' at position: '")
-                    .Append((object) reader.BaseStream.Position)
-                    .Append("'.")
-                    .ToString());
-            PartReader partReader = GetPartReader(partCode);
-            Node node = null;
-            if (partReader != null)
-            {
-                node = partReader.Read(reader, context);
-                logger.Debug(new StringBuilder("Part read:\r\n").Append(node).Append(".").ToString());
-            }
+            logger.Debug("Finding part for partCode: '" + partCode + "' at position: '" + reader.BaseStream.Position + "'.");
+
+            Node node = GetPartReader(partCode).Read(reader, context);
+            logger.Debug("Part read:\r\n" + node +".");
             return node;
         }
 

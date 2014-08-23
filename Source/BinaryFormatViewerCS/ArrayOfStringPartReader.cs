@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BinaryFormatViewer
 {
@@ -17,18 +18,11 @@ namespace BinaryFormatViewer
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
             uint objectId = binaryReader.ReadUInt32();
-            uint num1 = binaryReader.ReadUInt32();
-            var elements = new List<Node>();
-            int num2 = 0;
-            var num3 = (int) num1;
-            if (num3 < 0)
-                throw new ArgumentOutOfRangeException("max");
+            uint numberOfElements = binaryReader.ReadUInt32();
 
-            while (num2 < num3)
-            {
-                ++num2;
-                elements.Add(_partProvider.ReadNextPart(binaryReader, context));
-            }
+            var elements = Enumerable.Range(0, Convert.ToInt32(numberOfElements))
+                .Select(i => _partProvider.ReadNextPart(binaryReader, context))
+                .ToList();
 
             return new ArrayOfStringNode(objectId, elements);
         }
