@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSVS", "SSVS.csproj", "{4B55EBCC-B57F-49DE-A9E1-C1FB594AF21C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryFormatViewerTests", "BinaryFormatViewerTests\BinaryFormatViewerTests.csproj", "{4B55EBCC-B57F-49DE-A9E1-C1FB594AF21C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryFormatViewer", "..\BinaryFormatViewerCS\BinaryFormatViewer.csproj", "{B29BEC63-BBCE-493B-A70D-665FF0FB065B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryFormatViewer", "BinaryFormatViewerCS\BinaryFormatViewer.csproj", "{B29BEC63-BBCE-493B-A70D-665FF0FB065B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializationViewerVS", "..\BinarySerializationViewerVS\BinarySerializationViewerVS.csproj", "{A1393F4C-C3EB-401A-A3BD-4B904095240E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializationViewerVS", "BinarySerializationViewerVS\BinarySerializationViewerVS.csproj", "{A1393F4C-C3EB-401A-A3BD-4B904095240E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
