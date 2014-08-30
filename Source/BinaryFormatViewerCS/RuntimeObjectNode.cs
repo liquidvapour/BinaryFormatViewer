@@ -8,12 +8,12 @@ namespace BinaryFormatViewer
     [Serializable]
     public class RuntimeObjectNode : IdentifiedNode, IHaveChildren, IHaveTypeSpecs
     {
-        public RuntimeObjectNode(uint id, string name, List<FieldNode> fields)
+        public RuntimeObjectNode(uint id, string name, IList<FieldNode> fields)
             : this(id, name, fields, null)
         {
         }
 
-        public RuntimeObjectNode(uint id, string name, List<FieldNode> fields, Node assembly)
+        public RuntimeObjectNode(uint id, string name, IList<FieldNode> fields, Node assembly)
             : base(id)
         {
             Fields = fields;
@@ -29,7 +29,7 @@ namespace BinaryFormatViewer
             }
         }
 
-        public List<FieldNode> Fields { get; private set; }
+        public IList<FieldNode> Fields { get; private set; }
 
         public string Name { get; private set; }
 

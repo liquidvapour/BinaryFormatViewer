@@ -4,14 +4,14 @@ using System.IO;
 namespace BinaryFormatViewer
 {
     [Serializable]
-    public class StringArrayTypeSpecReader : TypeSpecReader
+    public class StringArrayTypeSpecBuilder : TypeSpecBuilder
     {
         public override bool CanRead(byte typeTag)
         {
             return typeTag == 6;
         }
 
-        public override TypeSpec Read(BinaryReader binaryReader)
+        public override TypeSpec BuildUsing(BinaryReader binaryReader)
         {
             return new StringArrayTypeSpec();
         }

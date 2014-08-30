@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using log4net;
 
 namespace BinaryFormatViewer
@@ -12,20 +10,20 @@ namespace BinaryFormatViewer
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof (TypeSpecProvider));
 
-        private readonly List<TypeSpecReader> _typeSpecReaders;
+        private readonly TypeSpecBuilder[] _typeSpecBuilders;
 
         public TypeSpecProvider()
         {
-            _typeSpecReaders = new List<TypeSpecReader>
+            _typeSpecBuilders = new TypeSpecBuilder[]
             {
-                new PrimitiveTypeSpecReader(),
-                new GeneralTypeTypeSpecReader(),
-                new StringTypeSpecReader(),
-                new ObjectTypeSpecReader(),
-                new StringArrayTypeSpecReader(),
-                new RuntimeTypeSpecReader(),
-                new ArrayOfPrimitiveTypeSpecReader(),
-                new ArrayOfObject()
+                new PrimitiveTypeSpecBuilder(),
+                new GeneralTypeTypeSpecBuilder(),
+                new StringTypeSpecBuilder(),
+                new ObjectTypeSpecBuilder(),
+                new StringArrayTypeSpecBuilder(),
+                new RuntimeTypeSpecBuilder(),
+                new ArrayOfPrimitiveTypeSpecBuilder(),
+                new ArrayOfObjectTypeSpecBuilder()
             };
         }
 
@@ -33,16 +31,16 @@ namespace BinaryFormatViewer
         {
             Logger.Debug("Getting TypeSpec for typeTag: '" + typeTag + "' at position: '" + binaryReader.BaseStream.Position + "'.");
 
-            return GetTypeSpecReaderFor(typeTag).Read(binaryReader);
+            return GetTypeSpecBuilderFor(typeTag).BuildUsing(binaryReader);
         }
 
-        private TypeSpecReader GetTypeSpecReaderFor(byte typeTag)
+        private TypeSpecBuilder GetTypeSpecBuilderFor(byte typeTag)
         {
-            var reader = _typeSpecReaders.FirstOrDefault(x => x.CanRead(typeTag));
+            var reader = _typeSpecBuilders.FirstOrDefault(x => x.CanRead(typeTag));
 
             if (reader == null) throw new ArgumentException("No type spec reader for type tag " + typeTag + ".", "typeTag");
 
-            Logger.Debug("Found TypeSpecReader '" + reader.GetType().FullName + "'.");
+            Logger.Debug("Found TypeSpecBuilder '" + reader.GetType().FullName + "'.");
             return reader;
         }
     }
