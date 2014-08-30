@@ -6,7 +6,7 @@ namespace BinaryFormatViewer
     [Serializable]
     public class BoxedPrimitiveTypePartReader : PartReader
     {
-        protected PrimitiveTypeReader _primitiveTypeReader;
+        private readonly PrimitiveTypeReader _primitiveTypeReader;
 
         public BoxedPrimitiveTypePartReader(PrimitiveTypeReader primitiveTypeReader)
         {

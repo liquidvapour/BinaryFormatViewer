@@ -6,31 +6,18 @@ namespace BinaryFormatViewer
     [Serializable]
     public class GenericArrayNode : IdentifiedNode, IHaveChildren
     {
-        protected List<uint> _elementCountPerDimension;
-        protected TypeSpec _typeSpec;
-        protected List<Node> _vals;
-
-        public GenericArrayNode(uint objectId, List<Node> vals, List<uint> elementCountPerDimension, TypeSpec typeSpec)
+        public GenericArrayNode(uint objectId, IList<Node> vals, List<uint> elementCountPerDimension, TypeSpec typeSpec)
             : base(objectId)
         {
-            _vals = vals;
-            _elementCountPerDimension = elementCountPerDimension;
-            _typeSpec = typeSpec;
+            Values = vals;
+            ElementCountPerDimension = elementCountPerDimension;
+            TypeSpec = typeSpec;
         }
 
-        public List<uint> ElementCountPerDimension
-        {
-            get { return _elementCountPerDimension; }
-        }
+        public List<uint> ElementCountPerDimension { get; private set; }
 
-        public TypeSpec TypeSpec
-        {
-            get { return _typeSpec; }
-        }
+        public TypeSpec TypeSpec { get; private set; }
 
-        public virtual List<Node> Values
-        {
-            get { return _vals; }
-        }
+        public IList<Node> Values { get; private set; }
     }
 }

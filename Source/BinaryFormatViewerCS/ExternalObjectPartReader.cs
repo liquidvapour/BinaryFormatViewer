@@ -9,7 +9,7 @@ namespace BinaryFormatViewer
     [Serializable]
     public class ExternalObjectPartReader : ObjectReaderBase
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof (ExternalObjectPartReader));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (ExternalObjectPartReader));
 
         public ExternalObjectPartReader(PartProvider partProvider, PrimitiveTypeReader primitiveTypeReader)
             : base(partProvider, primitiveTypeReader)
@@ -18,13 +18,13 @@ namespace BinaryFormatViewer
 
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
-            logger.InfoFormat("Starting Read at: '{0}' -->.", binaryReader.BaseStream.Position);
+            Logger.InfoFormat("Starting Read at: '{0}' -->.", binaryReader.BaseStream.Position);
             uint id = binaryReader.ReadUInt32();
-            logger.DebugFormat("ObjectId: '{0}'.", id);
+            Logger.DebugFormat("ObjectId: '{0}'.", id);
             string name = binaryReader.ReadString();
-            logger.DebugFormat("Name: '{0}'.", name);
+            Logger.DebugFormat("Name: '{0}'.", name);
             uint fieldCount = binaryReader.ReadUInt32();
-            logger.DebugFormat("fieldCount: '{0}'.", fieldCount);
+            Logger.DebugFormat("fieldCount: '{0}'.", fieldCount);
 
             var fieldNames = new List<string>((int) fieldCount);
 
@@ -32,18 +32,18 @@ namespace BinaryFormatViewer
             {
                 string str = binaryReader.ReadString();
                 fieldNames.Add(str);
-                logger.DebugFormat("field: '{0}', name: '{1}'.", i, name);
+                Logger.DebugFormat("field: '{0}', name: '{1}'.", i, name);
             }
 
             List<TypeSpec> typeSpecs = ReadTypeSpecs(binaryReader, fieldCount);
             uint assemblyId = binaryReader.ReadUInt32();
-            logger.DebugFormat("assemblyId: '{0}'.", assemblyId);
+            Logger.DebugFormat("assemblyId: '{0}'.", assemblyId);
 
             var nodes = typeSpecs.Select(current => GetNodeBy(binaryReader, current, context)).ToList();
 
             var fieldNodes = Enumerable.Range(0, fieldNames.Count).Select(i => new FieldNode(fieldNames[i], nodes[i], typeSpecs[i])).ToList();
 
-            logger.InfoFormat("<-- End Read at: '{0}'.", binaryReader.BaseStream.Position);
+            Logger.InfoFormat("<-- End Read at: '{0}'.", binaryReader.BaseStream.Position);
             return new ObjectNode(id, name, assemblyId, fieldNodes);
         }
 

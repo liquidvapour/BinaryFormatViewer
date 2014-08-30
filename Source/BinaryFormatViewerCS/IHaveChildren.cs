@@ -4,6 +4,6 @@ namespace BinaryFormatViewer
 {
     public interface IHaveChildren
     {
-        List<Node> Values { get; }
+        IList<Node> Values { get; }
     }
 }

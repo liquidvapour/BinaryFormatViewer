@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
+    [System.Serializable]
     public class ArrayOfObjectNode : IdentifiedNode, IHaveChildren
     {
-        private readonly List<Node> _nodes;
+        private readonly IList<Node> _nodes;
 
-        public ArrayOfObjectNode(uint objectId, List<Node> elements)
+        public ArrayOfObjectNode(uint objectId, IList<Node> elements)
             : base(objectId)
         {
             _nodes = elements;
         }
 
-        public virtual List<Node> Values
+        public IList<Node> Values
         {
             get { return _nodes; }
         }

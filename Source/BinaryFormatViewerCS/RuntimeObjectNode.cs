@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BinaryFormatViewer
@@ -7,10 +8,6 @@ namespace BinaryFormatViewer
     [Serializable]
     public class RuntimeObjectNode : IdentifiedNode, IHaveChildren, IHaveTypeSpecs
     {
-        private readonly List<FieldNode> _fieldValues;
-        private readonly string _name;
-        private Node _assembly;
-
         public RuntimeObjectNode(uint id, string name, List<FieldNode> fields)
             : this(id, name, fields, null)
         {
@@ -19,43 +16,24 @@ namespace BinaryFormatViewer
         public RuntimeObjectNode(uint id, string name, List<FieldNode> fields, Node assembly)
             : base(id)
         {
-            _fieldValues = fields;
-            _name = name;
-            _assembly = assembly;
+            Fields = fields;
+            Name = name;
+            Assembly = assembly;
         }
 
-        public virtual List<Node> Values
+        public IList<Node> Values
         {
             get
             {
-                var list = new List<Node>();
-                using (List<FieldNode>.Enumerator enumerator = Fields.GetEnumerator())
-                {
-                    while (enumerator.MoveNext())
-                    {
-                        FieldNode current = enumerator.Current;
-                        list.Add(current.Value);
-                    }
-                }
-                return list;
+                return Fields.Select(current => current.Value).ToList();
             }
         }
 
-        public virtual List<FieldNode> Fields
-        {
-            get { return _fieldValues; }
-        }
+        public List<FieldNode> Fields { get; private set; }
 
-        public virtual string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; private set; }
 
-        public virtual Node Assembly
-        {
-            get { return _assembly; }
-            set { _assembly = value; }
-        }
+        public Node Assembly { get; set; }
 
         public override string ToString()
         {
@@ -63,13 +41,13 @@ namespace BinaryFormatViewer
             stringBuilder.AppendLine("Runtime Object");
             stringBuilder.AppendLine("--------------");
             stringBuilder.AppendLine(base.ToString());
-            stringBuilder.AppendLine(string.Format("Name: '{0}'", _name));
-            if (_assembly != null)
-                stringBuilder.AppendLine("Assembly: '" + _assembly + "'.");
+            stringBuilder.AppendLine(string.Format("Name: '{0}'", Name));
+            if (Assembly != null)
+                stringBuilder.AppendLine("Assembly: '" + Assembly + "'.");
 
-            foreach (FieldNode current in Fields)
+            foreach (FieldNode field in Fields)
             {
-                stringBuilder.AppendLine(new StringBuilder("field: ").Append(current).ToString());
+                stringBuilder.AppendLine("field: " + field);
             }
 
             stringBuilder.AppendLine("--------------");
