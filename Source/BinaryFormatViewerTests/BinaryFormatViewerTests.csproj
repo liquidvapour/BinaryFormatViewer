@@ -103,6 +103,7 @@
     <Compile Include="when_reading_a_serialized_array_with_an_instance_at_index_2_and_3_null_values.cs" />
     <Compile Include="when_reading_a_serialized_jagged_array_with_2_dimensions.cs" />
     <Compile Include="when_reading_a_serialized_TestItem.cs" />
+    <Compile Include="when_told_to_read_an_array_of_complex_type.cs" />
     <Compile Include="when_told_to_read_a_complex_type.cs" />
     <Compile Include="when_told_to_read_blob_bin.cs" />
     <Compile Include="when_told_to_read_boxed_primitives.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="when_told_to_read_serialized_generic_type.cs" />
     <Compile Include="when_told_to_read_serialized_int16_with_value_13.cs" />
     <Compile Include="when_told_to_read_serialized_int32_with_value_13.cs" />
+    <Compile Include="when_tole_to_read_a_serialized_two_way_reference.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BinaryFormatViewerCS\BinaryFormatViewer.csproj">

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Windows;
-using System.Data;
-using System.Xml;
-using System.Configuration;
+﻿using System.Windows;
 
 namespace BinarySerializationViewer
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
     	
     	
@@ -21,8 +17,7 @@ namespace BinarySerializationViewer
             
             var mainWindow = new MainWindow();
             
-            var mainViewModel = new MainViewModel(new MainModel());
-            mainViewModel.FilePicker = new FilePickerViewModel();
+            var mainViewModel = new MainViewModel(new MainModel()) {FilePicker = new FilePickerViewModel()};
             //mainViewModel.FilePicker.SourcePath = "Hello";
             mainWindow.DataContext = mainViewModel;
             

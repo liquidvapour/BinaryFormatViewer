@@ -4,120 +4,120 @@ using System.Linq;
 
 namespace BinaryFormatViewer
 {
-    public class ReferenceResolver
+    public static class ReferenceResolver
     {
-        public void ResolveReferences(IList<Node> nodeList)
+        private static readonly IDictionary<Type, Action<Node, ResolutionContext>> Resolve = new Dictionary<Type, Action<Node, ResolutionContext>>
         {
-            var idNodes = BuildObjectIdHash(nodeList);
-            int resolves = 0;
-            bool flag = false;
-            while (!flag)
+            {typeof(ArrayOfStringNode), ResolveReferencesInAParentNode},
+            {typeof(GenericArrayNode), ResolveReferencesInAParentNode},
+            {typeof(ObjectNode), ResolveReferencesInANodeWithTypeSpecs}
+        };
+
+        public static void ResolveReferences(this IList<Node> nodeList)
+        {
+            nodeList.ResolveReferencesTillThereAreNoneLeftToResolve(nodeList.BuildObjectIdHashFrom());
+        }
+
+        private static void ResolveReferencesTillThereAreNoneLeftToResolve(this IList<Node> nodeList, IDictionary<uint, IdentifiedNode> idNodes)
+        {
+            var context = new ResolutionContext(idNodes);
+            do
             {
-                ResolveReferences(nodeList, idNodes, new Stack<Node>(), ref resolves);
-                if (resolves == 0)
-                    flag = true;
-                else
-                    resolves = 0;
+                context.Resolves = 0;
+                nodeList.ResolveNodeReferences(context);
+            } while (context.Resolves != 0);
+        }
+
+        /// <summary>
+        /// Fields that have a value that references a ReferenceNode will have value set to the actual Node.
+        /// </summary>
+        /// <param name="fieldNodeList"></param>
+        /// <param name="context"></param>
+        private static void ResolveFieldNodeReferences(this IList<FieldNode> fieldNodeList, ResolutionContext context)
+        {
+            DeepResolveAllReferences(fieldNodeList.Select(x => x.Value), context);
+
+            fieldNodeList.ResolveFieldNodeObjectReferences(context);
+        }
+
+        private static void ResolveFieldNodeObjectReferences(this IEnumerable<FieldNode> fieldNodeList, ResolutionContext context)
+        {
+            foreach (var fieldNode in fieldNodeList)
+            {
+                var node = fieldNode.Value as ObjectReferenceNode;
+                if (node != null)
+                {
+                    context.Resolves += 1;
+                    fieldNode.Value = context.IdNodes[node.RefId];
+                }
             }
         }
 
-        private IDictionary<uint, IdentifiedNode> BuildObjectIdHash(IEnumerable<Node> nodes)
+
+        /// <summary>
+        /// references to ReferenceNode in this list will be replaced with the actual Node.
+        /// </summary>
+        /// <param name="nodeList"></param>
+        /// <param name="context"></param>
+        private static void ResolveNodeReferences(this IList<Node> nodeList, ResolutionContext context)
+        {
+            nodeList.DeepResolveAllReferences(context);
+
+            nodeList.ResolveNodeListObjectReferences(context);
+        }
+
+        private static void ResolveNodeListObjectReferences(this IList<Node> nodeList, ResolutionContext context)
+        {
+            foreach (var i in Enumerable.Range(0, nodeList.Count))
+            {
+                var node = nodeList[i] as ObjectReferenceNode;
+                if (node != null)
+                {
+                    context.Resolves += 1;
+                    nodeList[i] = context.IdNodes[node.RefId];
+                }
+            }
+        }
+
+        private static void DeepResolveAllReferences(this IEnumerable<Node> nodeList, ResolutionContext context)
+        {
+            foreach (var node in nodeList)
+            {
+                node.ResolveDeepReferences(context);
+            }
+        }
+
+        private static void ResolveDeepReferences(this Node node, ResolutionContext context)
+        {
+            var nodeType = node.GetType();
+            if (!Resolve.ContainsKey(nodeType)) return;
+
+            Resolve[nodeType](node, context);
+        }
+
+        private static void ResolveReferencesInANodeWithTypeSpecs(Node node, ResolutionContext context)
+        {
+            TrackNodeAnd(node, context, () => ResolveFieldNodeReferences(((IHaveTypeSpecs) node).Fields, context));
+        }
+
+
+        private static void ResolveReferencesInAParentNode(Node node, ResolutionContext context)
+        {
+            TrackNodeAnd(node, context, () => ResolveNodeReferences(((IHaveChildren) node).Values, context));
+        }
+
+        private static void TrackNodeAnd(this Node node, ResolutionContext context, Action doIt)
+        {
+            if (context.ResolutionStack.Contains(node)) return;
+
+            context.ResolutionStack.Push(node);
+            doIt();
+            context.ResolutionStack.Pop();
+        }
+
+        private static IDictionary<uint, IdentifiedNode> BuildObjectIdHashFrom(this IEnumerable<Node> nodes)
         {
             return nodes.GetIdentifiedNodes().ToDictionary(x => x.Id);
-        }
-
-
-        private void ResolveReferences(IList<FieldNode> nodeList, IDictionary<uint, IdentifiedNode> idNodes, Stack<Node> resolutionStack,
-            ref int resolves)
-        {
-            int num = 0;
-            int count = nodeList.Count;
-            if (count < 0)
-                throw new ArgumentOutOfRangeException("max");
-            while (num < count)
-            {
-                int index = num;
-                ++num;
-                if (nodeList[index].Value is ArrayOfStringNode)
-                {
-                    var arrayOfStringNode = (ArrayOfStringNode) nodeList[index].Value;
-                    if (!resolutionStack.Contains(arrayOfStringNode))
-                    {
-                        resolutionStack.Push(arrayOfStringNode);
-                        ResolveReferences(arrayOfStringNode.Values, idNodes, resolutionStack, ref resolves);
-                        resolutionStack.Pop();
-                    }
-                }
-                if (nodeList[index].Value is GenericArrayNode)
-                {
-                    var genericArrayNode = (GenericArrayNode) nodeList[index].Value;
-                    if (!resolutionStack.Contains(genericArrayNode))
-                    {
-                        resolutionStack.Push(genericArrayNode);
-                        ResolveReferences(genericArrayNode.Values, idNodes, resolutionStack, ref resolves);
-                        resolutionStack.Pop();
-                    }
-                }
-                if (nodeList[index].Value is ObjectNode)
-                {
-                    var objectNode = nodeList[index].Value as ObjectNode;
-                    if (!resolutionStack.Contains(objectNode))
-                    {
-                        resolutionStack.Push(objectNode);
-                        ResolveReferences(objectNode.Fields, idNodes, resolutionStack, ref resolves);
-                        resolutionStack.Pop();
-                    }
-                }
-                if (nodeList[index].Value is ObjectReferenceNode)
-                {
-                    var objectReferenceNode = nodeList[index].Value as ObjectReferenceNode;
-                    resolves = checked(resolves + 1);
-                    nodeList[index].Value = (Node) idNodes[objectReferenceNode.RefId];
-                }
-            }
-        }
-
-        private void ResolveReferences(IList<Node> nodeList, IDictionary<uint, IdentifiedNode> idNodes, Stack<Node> resolutionStack, ref int resolves)
-        {
-            foreach (var index in Enumerable.Range(0, nodeList.Count))
-            {
-                if (nodeList[index] is ArrayOfStringNode)
-                {
-                    var arrayOfStringNode = (ArrayOfStringNode) nodeList[index];
-                    if (!resolutionStack.Contains(arrayOfStringNode))
-                    {
-                        resolutionStack.Push(arrayOfStringNode);
-                        ResolveReferences(arrayOfStringNode.Values, idNodes, resolutionStack, ref resolves);
-                        resolutionStack.Pop();
-                    }
-                }
-                if (nodeList[index] is GenericArrayNode)
-                {
-                    var genericArrayNode = (GenericArrayNode) nodeList[index];
-                    if (!resolutionStack.Contains(genericArrayNode))
-                    {
-                        resolutionStack.Push(genericArrayNode);
-                        ResolveReferences(genericArrayNode.Values, idNodes, resolutionStack, ref resolves);
-                        resolutionStack.Pop();
-                    }
-                }
-                if (nodeList[index] is ObjectNode)
-                {
-                    var objectNode = nodeList[index] as ObjectNode;
-                    if (!resolutionStack.Contains(objectNode))
-                    {
-                        resolutionStack.Push(objectNode);
-                        ResolveReferences(objectNode.Fields, idNodes, resolutionStack, ref resolves);
-                        resolutionStack.Pop();
-                    }
-                }
-                if (nodeList[index] is ObjectReferenceNode)
-                {
-                    var objectReferenceNode = nodeList[index] as ObjectReferenceNode;
-                    resolves = checked(resolves + 1);
-                    nodeList[index] = (Node) idNodes[objectReferenceNode.RefId];
-                }
-            }
         }
     }
 }

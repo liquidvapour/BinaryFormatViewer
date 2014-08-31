@@ -1,15 +1,4 @@
-﻿/*
- * Created by SharpDevelop.
- * User: ra-el
- * Date: 25/08/2010
- * Time: 09:30
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Input;
+﻿using System.Collections.Generic;
 using BinaryFormatViewer;
 
 namespace BinarySerializationViewer
@@ -31,16 +20,9 @@ namespace BinarySerializationViewer
 	    public NodeItemViewModel(Node node)
 	    {
 	        this.node = node;
-	        if (node != null)
-	        {
-	            Name = this.node.GetType().FullName;
-	        }
-	        else
-	        {
-	            Name = "Child";
-	        }
+	        Name = node != null ? this.node.GetType().FullName : "Child";
 	    }
-	    
+
 	    public string Name { get; private set; }
 	    
 	    public IEnumerable<INodeItemViewModel> Children

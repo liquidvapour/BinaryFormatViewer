@@ -11,12 +11,10 @@ namespace BinaryFormatViewer
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof (BinaryFormatReader));
         private readonly PartProvider _partProvider;
-        private readonly ReferenceResolver _referenceResolver;
 
         public BinaryFormatReader()
         {
             _partProvider = new PartProvider();
-            _referenceResolver = new ReferenceResolver();
         }
 
         public BinaryFormatterOutput ReadFull(Stream stream)
@@ -27,7 +25,7 @@ namespace BinaryFormatViewer
 
             IDictionary<uint, AssemblyNode> hash = BuildAssemblyHash(nodes);
             ResolveAssemblyReferences(nodes, hash);
-            _referenceResolver.ResolveReferences(nodes);
+            nodes.ResolveReferences();
             return new BinaryFormatterOutput(GetFirstObjectNode(nodes), hash.Values, nodes.GetIdentifiedNodes());
         }
 

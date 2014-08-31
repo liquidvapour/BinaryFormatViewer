@@ -55,6 +55,7 @@
     <Compile Include="AssemblyRefNode.cs" />
     <Compile Include="IdentifiedNode.cs" />
     <Compile Include="ReferenceResolver.cs" />
+    <Compile Include="ResolutionContext.cs" />
     <Compile Include="RuntimeObjectNode.cs" />
     <Compile Include="FieldNode.cs" />
     <Compile Include="ObjectNode.cs" />
