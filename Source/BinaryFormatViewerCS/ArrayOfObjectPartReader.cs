@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class ArrayOfObjectPartReader : PartReader
     {
         private readonly PartProvider _partProvider;

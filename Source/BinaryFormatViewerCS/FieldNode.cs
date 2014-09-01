@@ -1,6 +1,5 @@
 ﻿namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class FieldNode : Node
     {
         public FieldNode(string name, Node value, TypeSpec typeSpec)

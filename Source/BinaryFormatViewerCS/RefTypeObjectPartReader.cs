@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class RefTypeObjectPartReader : ObjectReaderBase
     {
         public RefTypeObjectPartReader(PartProvider partProvider, PrimitiveTypeReader primitiveTypeReader)

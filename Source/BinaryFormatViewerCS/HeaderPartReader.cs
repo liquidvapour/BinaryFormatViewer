@@ -2,7 +2,6 @@
 
 namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class HeaderPartReader : PartReader
     {
         public override Node Read(BinaryReader binaryReader, ReadContext context)

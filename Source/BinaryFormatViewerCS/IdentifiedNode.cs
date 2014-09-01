@@ -1,6 +1,5 @@
 ﻿namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class IdentifiedNode : Node
     {
         public IdentifiedNode(uint id)

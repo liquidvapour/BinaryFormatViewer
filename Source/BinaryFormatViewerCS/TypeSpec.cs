@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace BinaryFormatViewer
+﻿namespace BinaryFormatViewer
 {
-    [Serializable]
     public class TypeSpec
     {
         private readonly string _name;

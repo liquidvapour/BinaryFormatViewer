@@ -1,6 +1,5 @@
 ﻿namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class AssemblyRefNode : Node
     {
         public AssemblyRefNode(uint id)

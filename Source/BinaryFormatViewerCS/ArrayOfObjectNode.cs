@@ -2,7 +2,6 @@
 
 namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class ArrayOfObjectNode : IdentifiedNode, IHaveChildren
     {
         private readonly IList<Node> _nodes;

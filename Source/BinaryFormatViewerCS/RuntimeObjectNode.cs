@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class RuntimeObjectNode : IdentifiedNode, IHaveChildren, IHaveTypeSpecs
     {
         public RuntimeObjectNode(uint id, string name, IList<FieldNode> fields)

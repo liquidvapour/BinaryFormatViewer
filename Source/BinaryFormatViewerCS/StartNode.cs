@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace BinaryFormatViewer
+﻿namespace BinaryFormatViewer
 {
-    [Serializable]
     public class StartNode : Node
     {
         public override string ToString()

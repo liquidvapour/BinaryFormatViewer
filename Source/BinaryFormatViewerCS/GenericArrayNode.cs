@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class GenericArrayNode : IdentifiedNode, IHaveChildren
     {
         public GenericArrayNode(uint objectId, IList<Node> vals, List<uint> elementCountPerDimension, TypeSpec typeSpec)

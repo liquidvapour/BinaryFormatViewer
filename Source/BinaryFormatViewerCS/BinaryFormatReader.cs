@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class BinaryFormatReader
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof (BinaryFormatReader));

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class BinaryFormatterOutput
     {
         public BinaryFormatterOutput(Node mainNode, IEnumerable<AssemblyNode> assemblies,

@@ -35,22 +35,9 @@ namespace BinaryFormatViewer
         /// <param name="context"></param>
         private static void ResolveFieldNodeReferences(this IList<FieldNode> fieldNodeList, ResolutionContext context)
         {
-            DeepResolveAllReferences(fieldNodeList.Select(x => x.Value), context);
+            fieldNodeList.Select(x => x.Value).DeepResolveAllReferences(context);
 
             fieldNodeList.ResolveFieldNodeObjectReferences(context);
-        }
-
-        private static void ResolveFieldNodeObjectReferences(this IEnumerable<FieldNode> fieldNodeList, ResolutionContext context)
-        {
-            foreach (var fieldNode in fieldNodeList)
-            {
-                var node = fieldNode.Value as ObjectReferenceNode;
-                if (node != null)
-                {
-                    context.Resolves += 1;
-                    fieldNode.Value = context.IdNodes[node.RefId];
-                }
-            }
         }
 
 
@@ -64,6 +51,19 @@ namespace BinaryFormatViewer
             nodeList.DeepResolveAllReferences(context);
 
             nodeList.ResolveNodeListObjectReferences(context);
+        }
+
+        private static void ResolveFieldNodeObjectReferences(this IEnumerable<FieldNode> fieldNodeList, ResolutionContext context)
+        {
+            foreach (var fieldNode in fieldNodeList)
+            {
+                var node = fieldNode.Value as ObjectReferenceNode;
+                if (node != null)
+                {
+                    context.Resolves += 1;
+                    fieldNode.Value = context.IdNodes[node.RefId];
+                }
+            }
         }
 
         private static void ResolveNodeListObjectReferences(this IList<Node> nodeList, ResolutionContext context)

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public abstract class ObjectReaderBase : PartReader
     {
         private readonly PartProvider _partProvider;

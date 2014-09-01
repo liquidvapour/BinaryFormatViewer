@@ -2,7 +2,6 @@
 
 namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class GeneralTypeTypeSpecBuilder : TypeSpecBuilder
     {
         public override bool CanRead(byte typeTag)

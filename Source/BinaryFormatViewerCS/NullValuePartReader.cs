@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class NullValuePartReader : PartReader
     {
         public override Node Read(BinaryReader binaryReader, ReadContext context)

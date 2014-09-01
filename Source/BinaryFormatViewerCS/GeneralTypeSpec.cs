@@ -1,6 +1,5 @@
 ﻿namespace BinaryFormatViewer
 {
-    [System.Serializable]
     public class GeneralTypeSpec : TypeSpec
     {
         public GeneralTypeSpec(string typeName, int assemblyId)

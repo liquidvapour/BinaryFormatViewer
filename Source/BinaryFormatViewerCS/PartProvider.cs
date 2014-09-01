@@ -6,7 +6,6 @@ using log4net;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class PartProvider
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof (PartProvider));

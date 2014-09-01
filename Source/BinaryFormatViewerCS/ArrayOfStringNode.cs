@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class ArrayOfStringNode : IdentifiedNode, IHaveChildren
     {
         private readonly IList<Node> _nodes;

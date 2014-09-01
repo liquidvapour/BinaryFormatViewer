@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class AssemblyPartReader : PartReader
     {
         private const int PartCode = 12;

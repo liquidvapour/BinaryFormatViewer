@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace BinaryFormatViewer
+﻿namespace BinaryFormatViewer
 {
-    [Serializable]
     public class ArrayOfPrimitiveTypeSpec : TypeSpec
     {
         public ArrayOfPrimitiveTypeSpec(byte typeCode)

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class ObjectReferenceNode : Node
     {
         private readonly uint _refId;

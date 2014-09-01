@@ -1,9 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class ValueNode<T> : Node
     {
         protected T _value;

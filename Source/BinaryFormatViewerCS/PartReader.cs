@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public abstract class PartReader
     {
         public abstract Node Read(BinaryReader binaryReader, ReadContext context);

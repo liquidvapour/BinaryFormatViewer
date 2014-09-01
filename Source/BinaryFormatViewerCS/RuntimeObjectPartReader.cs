@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public class RuntimeObjectPartReader : ObjectReaderBase
     {
         public RuntimeObjectPartReader(PartProvider partProvider, PrimitiveTypeReader primitiveTypeReader)

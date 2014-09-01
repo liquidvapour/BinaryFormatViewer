@@ -2,7 +2,6 @@
 
 namespace BinaryFormatViewer
 {
-    [Serializable]
     public static class PrimitiveTypeNodeFactories
     {
         public static PrimitiveTypeNodeFactory Boolean = new PrimitiveTypeNodeFactory(1,
