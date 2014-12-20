@@ -4,24 +4,24 @@ using log4net;
 
 namespace BinaryFormatViewer
 {
-    public class PrimitiveTypeNodeFactory : PrimitiveTypeReaderFactoryBase
+    public class PrimitiveTypeNodeReader : IReadPrimitiveTypeNodes
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof (PrimitiveTypeNodeFactory));
+        private static readonly ILog logger = LogManager.GetLogger(typeof (PrimitiveTypeNodeReader));
         private readonly Func<BinaryReader, Node> _read;
         private readonly byte _typeId;
 
-        public PrimitiveTypeNodeFactory(byte typeId, Func<BinaryReader, Node> read)
+        public PrimitiveTypeNodeReader(TypeCode typeId, Func<BinaryReader, Node> read)
         {
-            _typeId = typeId;
+            _typeId = (byte)typeId;
             _read = read;
         }
 
-        public override bool CanRead(byte typeCode)
+        public bool CanRead(byte typeCode)
         {
             return _typeId == typeCode;
         }
 
-        public override Node Read(BinaryReader binaryReader)
+        public Node Read(BinaryReader binaryReader)
         {
             Node node = _read(binaryReader);
             logger.DebugFormat("Read Primitive value: '{0}'", node);

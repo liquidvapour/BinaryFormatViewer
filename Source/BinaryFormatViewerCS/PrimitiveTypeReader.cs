@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using log4net;
 
 namespace BinaryFormatViewer
 {
     public class PrimitiveTypeReader
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof (PrimitiveTypeReader));
-        private readonly List<PrimitiveTypeReaderFactoryBase> _strategies;
+        private static readonly ILog Logger = LogManager.GetLogger(typeof (PrimitiveTypeReader));
+        private readonly IReadPrimitiveTypeNodes[] _strategies;
 
-        public PrimitiveTypeReader()
+        public PrimitiveTypeReader(IReadPrimitiveTypeNodes[] primitiveTypeReaderFactories)
         {
-            _strategies = new List<PrimitiveTypeReaderFactoryBase>
-            {
-                PrimitiveTypeNodeFactories.Boolean,
-                PrimitiveTypeNodeFactories.Byte,
-                PrimitiveTypeNodeFactories.Int16,
-                PrimitiveTypeNodeFactories.Int32,
-                PrimitiveTypeNodeFactories.Int64,
-                PrimitiveTypeNodeFactories.DateTime,
-                PrimitiveTypeNodeFactories.UInt32,
-                PrimitiveTypeNodeFactories.UInt64
-            };
+            _strategies = primitiveTypeReaderFactories;
         }
 
         public Node Read(BinaryReader binaryReader, byte typeCode)
@@ -31,24 +20,18 @@ namespace BinaryFormatViewer
             return GetPrimitiveTypeReaderStrategy(typeCode).Read(binaryReader);
         }
 
-        public Node Read(BinaryReader binaryReader)
+        private IReadPrimitiveTypeNodes GetPrimitiveTypeReaderStrategy(byte typeCode)
         {
-            return GetPrimitiveTypeReaderStrategy(binaryReader.ReadByte()).Read(binaryReader);
-        }
-
-        private PrimitiveTypeReaderFactoryBase GetPrimitiveTypeReaderStrategy(byte typeCode)
-        {
-            foreach (PrimitiveTypeReaderFactoryBase strategy in _strategies)
+            var strategy = _strategies.FirstOrDefault(s => s.CanRead(typeCode));
+            if (strategy == null)
             {
-                if (strategy.CanRead(typeCode))
-                {
-                    logger.DebugFormat("Found PrimitiveTypeReader '{0}' for typeCode: '{1}'.",
-                        strategy.GetType().FullName, typeCode);
-                    return strategy;
-                }
+                throw new ArgumentException(string.Format("Unhandled type code: '{0}'.", typeCode), "typeCode");
             }
-            throw new ArgumentException(
-                new StringBuilder("Unhandled type code: ").Append((object) typeCode).ToString(), "typeCode");
+            
+            Logger.DebugFormat("Found PrimitiveTypeReader '{0}' for typeCode: '{1}'.",
+                strategy.GetType().FullName, typeCode);
+
+            return strategy;
         }
     }
 }

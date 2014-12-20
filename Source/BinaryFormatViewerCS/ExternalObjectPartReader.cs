@@ -18,11 +18,11 @@ namespace BinaryFormatViewer
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
             Logger.InfoFormat("Starting Read at: '{0}' -->.", binaryReader.BaseStream.Position);
-            uint id = binaryReader.ReadUInt32();
+            var id = binaryReader.ReadUInt32();
             Logger.DebugFormat("ObjectId: '{0}'.", id);
-            string name = binaryReader.ReadString();
+            var name = binaryReader.ReadString();
             Logger.DebugFormat("Name: '{0}'.", name);
-            uint fieldCount = binaryReader.ReadUInt32();
+            var fieldCount = binaryReader.ReadUInt32();
             Logger.DebugFormat("fieldCount: '{0}'.", fieldCount);
 
             var fieldNames = new List<string>((int) fieldCount);
@@ -34,8 +34,8 @@ namespace BinaryFormatViewer
                 Logger.DebugFormat("field: '{0}', name: '{1}'.", i, name);
             }
 
-            List<TypeSpec> typeSpecs = ReadTypeSpecs(binaryReader, fieldCount);
-            uint assemblyId = binaryReader.ReadUInt32();
+            var typeSpecs = ReadTypeSpecs(binaryReader, fieldCount);
+            var assemblyId = binaryReader.ReadUInt32();
             Logger.DebugFormat("assemblyId: '{0}'.", assemblyId);
 
             var nodes = typeSpecs.Select(current => GetNodeBy(binaryReader, current, context)).ToList();

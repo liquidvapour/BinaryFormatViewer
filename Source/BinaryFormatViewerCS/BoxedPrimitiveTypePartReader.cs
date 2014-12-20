@@ -13,7 +13,7 @@ namespace BinaryFormatViewer
 
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
-            return _primitiveTypeReader.Read(binaryReader);
+            return _primitiveTypeReader.Read(binaryReader, binaryReader.ReadByte());
         }
 
         public override bool CanRead(int partCode)

@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BinaryFormatterOutput.cs" />
     <Compile Include="BinaryFormatReader.cs" />
+    <Compile Include="IRepresentAPrimitive.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="NodeExtentions.cs" />
     <Compile Include="ObjectReferenceNode.cs" />
@@ -84,9 +85,8 @@
     <Compile Include="ArrayFilterBytePartReader.cs" />
     <Compile Include="BoxedPrimitiveTypePartReader.cs" />
     <Compile Include="PrimitiveTypeReader.cs" />
-    <Compile Include="PrimitiveTypeNodeFactories.cs" />
-    <Compile Include="PrimitiveTypeReaderFactoryBase.cs" />
-    <Compile Include="PrimitiveTypeNodeFactory.cs" />
+    <Compile Include="IReadPrimitiveTypeNodes.cs" />
+    <Compile Include="PrimitiveTypeNodeReader.cs" />
     <Compile Include="TypeSpec.cs" />
     <Compile Include="GeneralTypeSpec.cs" />
     <Compile Include="ObjectTypeSpec.cs" />

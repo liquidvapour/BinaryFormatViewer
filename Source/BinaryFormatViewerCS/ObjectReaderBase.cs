@@ -19,19 +19,10 @@ namespace BinaryFormatViewer
 
         protected Node GetNodeBy(BinaryReader binaryReader, TypeSpec typeSpec, ReadContext context)
         {
-            if (typeSpec is PrimitiveTypeSpec)
-            {
-                var primitiveTypeSpec = typeSpec as PrimitiveTypeSpec;
-                return _primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode);
-            }
-            else
-            {
-                if (!(typeSpec is ArrayOfPrimitiveTypeSpec))
-                    return _partProvider.ReadNextPart(binaryReader, context);
-
-                var primitiveTypeSpec = typeSpec as ArrayOfPrimitiveTypeSpec;
-                return _primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode);
-            }
+            var primitiveTypeSpec = typeSpec as IRepresentAPrimitive;
+            return primitiveTypeSpec != null 
+                ? _primitiveTypeReader.Read(binaryReader, primitiveTypeSpec.TypeCode) 
+                : _partProvider.ReadNextPart(binaryReader, context);
         }
 
         protected List<TypeSpec> ReadTypeSpecs(BinaryReader binaryReader, uint fieldCount)

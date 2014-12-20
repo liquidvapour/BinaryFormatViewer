@@ -13,7 +13,18 @@ namespace BinaryFormatViewer
 
         public PartProvider()
         {
-            var primitiveTypeReader = new PrimitiveTypeReader();
+            var primitiveTypeReader = new PrimitiveTypeReader(new IReadPrimitiveTypeNodes[]
+            {
+                new PrimitiveTypeNodeReader(TypeCode.Boolean, x => new ValueNode<bool>(x.ReadBoolean())),
+                new PrimitiveTypeNodeReader(TypeCode.Byte, x => new ValueNode<byte>(x.ReadByte())),
+                new PrimitiveTypeNodeReader(TypeCode.Int16, x => new ValueNode<short>(x.ReadInt16())),
+                new PrimitiveTypeNodeReader(TypeCode.Int32, x => new ValueNode<int>(x.ReadInt32())),
+                new PrimitiveTypeNodeReader(TypeCode.Int64, x => new ValueNode<long>(x.ReadInt64())),
+                new PrimitiveTypeNodeReader(TypeCode.DateTime, x => new ValueNode<DateTime>(DateTime.FromBinary(x.ReadInt64()))),
+                new PrimitiveTypeNodeReader(TypeCode.UInt32, x => new ValueNode<uint>(x.ReadUInt32())),
+                new PrimitiveTypeNodeReader(TypeCode.UInt64, x => new ValueNode<ulong>(x.ReadUInt64()))
+            });
+
             _partReaders = new List<PartReader>
             {
                 new HeaderPartReader(),

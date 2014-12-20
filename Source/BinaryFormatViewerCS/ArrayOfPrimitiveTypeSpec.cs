@@ -1,6 +1,6 @@
 ﻿namespace BinaryFormatViewer
 {
-    public class ArrayOfPrimitiveTypeSpec : TypeSpec
+    public class ArrayOfPrimitiveTypeSpec : TypeSpec, IRepresentAPrimitive
     {
         public ArrayOfPrimitiveTypeSpec(byte typeCode)
         {
