@@ -7,7 +7,7 @@ namespace BinaryFormatViewer
 {
     public class RuntimeObjectNode : IdentifiedNode, IHaveChildren, IHaveTypeSpecs
     {
-        private bool _buildingStringInformation;
+        private bool _buildingStringRepresentationForThisInstance;
 
         public RuntimeObjectNode(uint id, string name, IList<FieldNode> fields)
             : this(id, name, fields, null)
@@ -36,64 +36,80 @@ namespace BinaryFormatViewer
 
         public Node Assembly { get; set; }
 
-
-        private static int _toStringDepth = -1;
-
         public override string ToString()
         {
-            _toStringDepth++;
-
-            var depthPadding = new string(' ', 4*(_toStringDepth >= 0 ? _toStringDepth : 0));
-
-            if (_buildingStringInformation)
+            using (var depthController = new DepthController())
             {
-                _toStringDepth--;
-                return string.Format("Reference to Runtime Object: \"{0}\"", Id);
-            }
+                var depthPadding = GetDepthPadding(depthController.Depth);
 
-            var stringBuilder = new StringBuilder();
-            using (WhileBuildingStringRepresentation())
-            {
-                stringBuilder.AppendFormat("\n{0}Runtime Object\n", depthPadding);
-                stringBuilder.AppendFormat("{0}<-------------\n", depthPadding);
-                stringBuilder.AppendFormat("{0}{1}\n", depthPadding, base.ToString());
-                stringBuilder.AppendFormat("{1}Name: '{0}'\n", Name, depthPadding);
-                if (Assembly != null)
-                    stringBuilder.AppendFormat("{1}Assembly: '{0}'.\n", Assembly, depthPadding);
-
-                foreach (var field in Fields)
+                if (_buildingStringRepresentationForThisInstance)
                 {
-                    stringBuilder.AppendFormat("{1}field: {0}\n", field, depthPadding);
+                    return GetReferenceStringRepresentation();
                 }
 
-                stringBuilder.AppendFormat("{0}------------->\n", depthPadding);
+                _buildingStringRepresentationForThisInstance = true;
+
+                var result = GetFullStringRepresentation(depthPadding);
+
+                _buildingStringRepresentationForThisInstance = false;
+
+                return result;
             }
-            _toStringDepth--;
-            return stringBuilder.ToString();
         }
 
-        private IDisposable WhileBuildingStringRepresentation()
+        /// <summary>
+        /// RP 2014-12-20: This object wraps a static and needs commenting so 
+        /// RED FLAGS. But for the moment it is only used in this one place and
+        /// makes the calling code easier to read.
+        /// </summary>
+        private class DepthController : IDisposable
         {
-            return new BuildingStringControler(this);
-        }
+            private static int _globalDepth = -1;
 
-        private class BuildingStringControler : IDisposable
-        {
-            private readonly RuntimeObjectNode _owner;
-
-            public BuildingStringControler(RuntimeObjectNode owner)
+            public DepthController()
             {
-                if (owner == null)
-                {
-                    throw new ArgumentNullException("owner");
-                }
-                _owner = owner;
-                _owner._buildingStringInformation = true;
+                _globalDepth++;
             }
+
+            public int Depth { get { return _globalDepth >= 0 ? _globalDepth : 0; } }
 
             public void Dispose()
             {
-                _owner._buildingStringInformation = false;
+                _globalDepth--;
+            }
+        }
+
+        private static string GetDepthPadding(int depth)
+        {
+            return new string(' ', 4*depth);
+        }
+
+        private string GetReferenceStringRepresentation()
+        {
+            return string.Format("Reference to Runtime Object: \"{0}\"", Id);
+        }
+
+        private string GetFullStringRepresentation(string linePrefix)
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendFormat("\n{0}Runtime Object\n", linePrefix);
+            stringBuilder.AppendFormat("{0}<-------------\n", linePrefix);
+            stringBuilder.AppendFormat("{0}{1}\n", linePrefix, base.ToString());
+            stringBuilder.AppendFormat("{1}Name: '{0}'\n", Name, linePrefix);
+            if (Assembly != null)
+                stringBuilder.AppendFormat("{1}Assembly: '{0}'.\n", Assembly, linePrefix);
+
+            AppendFieldsTo(stringBuilder, linePrefix);
+
+            stringBuilder.AppendFormat("{0}------------->\n", linePrefix);
+            return stringBuilder.ToString();
+        }
+
+        private void AppendFieldsTo(StringBuilder stringBuilder, string linePrefix)
+        {
+            foreach (var field in Fields)
+            {
+                stringBuilder.AppendFormat("{1}field: {0}\n", field, linePrefix);
             }
         }
     }
