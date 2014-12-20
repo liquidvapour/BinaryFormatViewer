@@ -63,6 +63,7 @@
     <Compile Include="GenericArrayNode.cs" />
     <Compile Include="ArrayOfObjectNode.cs" />
     <Compile Include="ArrayOfStringNode.cs" />
+    <Compile Include="TypeCode.cs" />
     <Compile Include="ValueNode.cs" />
     <Compile Include="EndNode.cs" />
     <Compile Include="StartNode.cs" />
