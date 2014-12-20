@@ -13,15 +13,17 @@ namespace BinaryFormatViewer
 
         public PrimitiveTypeReader()
         {
-            _strategies = new List<PrimitiveTypeReaderFactoryBase>();
-            _strategies.Add(PrimitiveTypeNodeFactories.Boolean);
-            _strategies.Add(PrimitiveTypeNodeFactories.Byte);
-            _strategies.Add(PrimitiveTypeNodeFactories.Int16);
-            _strategies.Add(PrimitiveTypeNodeFactories.Int32);
-            _strategies.Add(PrimitiveTypeNodeFactories.Int64);
-            _strategies.Add(PrimitiveTypeNodeFactories.DateTime);
-            _strategies.Add(PrimitiveTypeNodeFactories.UInt32);
-            _strategies.Add(PrimitiveTypeNodeFactories.UInt64);
+            _strategies = new List<PrimitiveTypeReaderFactoryBase>
+            {
+                PrimitiveTypeNodeFactories.Boolean,
+                PrimitiveTypeNodeFactories.Byte,
+                PrimitiveTypeNodeFactories.Int16,
+                PrimitiveTypeNodeFactories.Int32,
+                PrimitiveTypeNodeFactories.Int64,
+                PrimitiveTypeNodeFactories.DateTime,
+                PrimitiveTypeNodeFactories.UInt32,
+                PrimitiveTypeNodeFactories.UInt64
+            };
         }
 
         public Node Read(BinaryReader binaryReader, byte typeCode)

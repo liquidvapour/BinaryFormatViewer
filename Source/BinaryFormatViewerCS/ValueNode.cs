@@ -1,14 +1,12 @@
-﻿using System.Text;
-
-namespace BinaryFormatViewer
+﻿namespace BinaryFormatViewer
 {
     public class ValueNode<T> : Node
     {
-        protected T _value;
+        private readonly T _value;
 
-        public ValueNode(T va)
+        public ValueNode(T value)
         {
-            _value = va;
+            _value = value;
         }
 
         public T Value
@@ -18,11 +16,7 @@ namespace BinaryFormatViewer
 
         public override string ToString()
         {
-            return
-                new StringBuilder("ValueNode of type '").Append(GetType().Name)
-                    .Append("' with value: '")
-                    .Append(_value)
-                    .ToString();
+            return string.Format("ValueNode of type '{0}' with value: '{1}", GetType().Name, _value);
         }
     }
 }

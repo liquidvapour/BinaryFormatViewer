@@ -15,8 +15,8 @@ namespace BinaryFormatViewer
 
         public override Node Read(BinaryReader binaryReader, ReadContext context)
         {
-            uint objectId = binaryReader.ReadUInt32();
-            uint numberOfElements = binaryReader.ReadUInt32();
+            var objectId = binaryReader.ReadUInt32();
+            var numberOfElements = binaryReader.ReadUInt32();
 
             var elements = Enumerable.Range(0, Convert.ToInt32(numberOfElements))
                 .Select(i => _partProvider.ReadNextPart(binaryReader, context))

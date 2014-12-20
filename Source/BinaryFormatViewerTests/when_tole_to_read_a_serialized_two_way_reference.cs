@@ -27,7 +27,7 @@ namespace SerializationSpike
     }
 
     [TestFixture]
-    public class when_tole_to_read_a_serialized_two_way_reference : BinarySerializedObjectSpec
+    public class when_told_to_read_a_serialized_two_way_reference : BinarySerializedObjectSpec
     {
 
         [Test]
@@ -35,9 +35,28 @@ namespace SerializationSpike
         {
             var fooNode = (ObjectNode)result;
             Assert.That(fooNode.Name, Is.EqualTo("SerializationSpike.Foo"));
-            var barNode = (ObjectNode)fooNode.Fields[0].Value;
-            Assert.That(barNode.Name, Is.EqualTo("SerializationSpike.Bar"));
 
+            AssertField(fooNode.Fields[0], "Bar");
+
+            AssertField(fooNode.Fields[1], "Shmoo");
+
+            var shmooNode = (ObjectNode) fooNode.Fields[1].Value;
+            Assert.That(shmooNode.Name, Is.EqualTo("SerializationSpike.Shmoo"));
+
+            AssertField(shmooNode.Fields[0], "Bar");
+
+            AssertField(shmooNode.Fields[1], "Foo");
+
+            var shmooFooNode = shmooNode.Fields[1];
+
+            Assert.That(shmooFooNode, Is.EqualTo(fooNode));
+        }
+
+        private static void AssertField(FieldNode fieldNode, string fieldName)
+        {
+            Assert.That(fieldNode.Name, Is.EqualTo("<{0}>k__BackingField".FormatUsing(fieldName)));
+            Assert.That(fieldNode.Value, Is.TypeOf<ObjectNode>());
+            Assert.That(((ObjectNode) fieldNode.Value).Name, Is.EqualTo("SerializationSpike.{0}".FormatUsing(fieldName)));
         }
 
         protected override object GetObjectToSerialize()

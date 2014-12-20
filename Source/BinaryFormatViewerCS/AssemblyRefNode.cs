@@ -11,7 +11,7 @@
 
         public override string ToString()
         {
-            return "AssemblyRef: " + Id;
+            return string.Format("AssemblyRef: {0}", Id);
         }
     }
 }

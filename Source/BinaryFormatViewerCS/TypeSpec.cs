@@ -4,11 +4,7 @@
     {
         private readonly string _name;
 
-        public TypeSpec() : this(null)
-        {
-        }
-
-        public TypeSpec(string name)
+        public TypeSpec(string name = null)
         {
             _name = name ?? GetType().FullName;
         }

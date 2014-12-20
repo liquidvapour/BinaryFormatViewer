@@ -11,7 +11,7 @@
 
         public override string ToString()
         {
-            return "Id: '" + Id + "'";
+            return string.Format("Id: '{0}'", Id);
         }
     }
 }

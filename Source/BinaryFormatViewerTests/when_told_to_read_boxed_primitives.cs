@@ -35,7 +35,6 @@ namespace SerializationSpike
         [Test]
         public void should_return_an_object_node()
         {
-            var objectNode = result as ObjectNode;
             Assert.That(result, Is.TypeOf(typeof (ObjectNode)));
         }
     }

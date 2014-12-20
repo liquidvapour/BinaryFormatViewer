@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace BinaryFormatViewer
+﻿namespace BinaryFormatViewer
 {
     public class ObjectReferenceNode : Node
     {
@@ -18,7 +16,7 @@ namespace BinaryFormatViewer
 
         public override string ToString()
         {
-            return new StringBuilder("ObjectReferenceNode RefId: '").Append((object) _refId).Append("'").ToString();
+            return string.Format("ObjectReferenceNode RefId: '{0}'", _refId);
         }
     }
 }

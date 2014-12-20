@@ -6,7 +6,7 @@ namespace BinaryFormatViewer
 {
     public static class ReferenceResolver
     {
-        private static readonly IDictionary<Type, Action<Node, ResolutionContext>> Resolve = new Dictionary<Type, Action<Node, ResolutionContext>>
+        private static readonly IDictionary<Type, Action<Node, ResolutionContext>> ResolversBy = new Dictionary<Type, Action<Node, ResolutionContext>>
         {
             {typeof(ArrayOfStringNode), ResolveReferencesInAParentNode},
             {typeof(GenericArrayNode), ResolveReferencesInAParentNode},
@@ -23,9 +23,9 @@ namespace BinaryFormatViewer
             var context = new ResolutionContext(idNodes);
             do
             {
-                context.Resolves = 0;
+                context.SkipedResolves = 0;
                 nodeList.ResolveNodeReferences(context);
-            } while (context.Resolves != 0);
+            } while (context.SkipedResolves != 0);
         }
 
         /// <summary>
@@ -60,7 +60,6 @@ namespace BinaryFormatViewer
                 var node = fieldNode.Value as ObjectReferenceNode;
                 if (node != null)
                 {
-                    context.Resolves += 1;
                     fieldNode.Value = context.IdNodes[node.RefId];
                 }
             }
@@ -73,7 +72,6 @@ namespace BinaryFormatViewer
                 var node = nodeList[i] as ObjectReferenceNode;
                 if (node != null)
                 {
-                    context.Resolves += 1;
                     nodeList[i] = context.IdNodes[node.RefId];
                 }
             }
@@ -83,32 +81,36 @@ namespace BinaryFormatViewer
         {
             foreach (var node in nodeList)
             {
-                node.ResolveDeepReferences(context);
+                node.ResolveDeepReferencesWith(context);
             }
         }
 
-        private static void ResolveDeepReferences(this Node node, ResolutionContext context)
+        private static void ResolveDeepReferencesWith(this Node node, ResolutionContext context)
         {
             var nodeType = node.GetType();
-            if (!Resolve.ContainsKey(nodeType)) return;
+            if (!ResolversBy.ContainsKey(nodeType)) return;
 
-            Resolve[nodeType](node, context);
+            ResolversBy[nodeType](node, context);
         }
 
         private static void ResolveReferencesInANodeWithTypeSpecs(Node node, ResolutionContext context)
         {
-            TrackNodeAnd(node, context, () => ResolveFieldNodeReferences(((IHaveTypeSpecs) node).Fields, context));
+            node.TrackNodeAnd(context, () => ResolveFieldNodeReferences(((IHaveTypeSpecs) node).Fields, context));
         }
 
 
         private static void ResolveReferencesInAParentNode(Node node, ResolutionContext context)
         {
-            TrackNodeAnd(node, context, () => ResolveNodeReferences(((IHaveChildren) node).Values, context));
+            node.TrackNodeAnd(context, () => ResolveNodeReferences(((IHaveChildren)node).Values, context));
         }
 
         private static void TrackNodeAnd(this Node node, ResolutionContext context, Action doIt)
         {
-            if (context.ResolutionStack.Contains(node)) return;
+            if (context.ResolutionStack.Contains(node))
+            {
+                context.SkipedResolves++;
+                return;
+            }
 
             context.ResolutionStack.Push(node);
             doIt();

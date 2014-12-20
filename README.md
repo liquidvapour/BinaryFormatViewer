@@ -25,3 +25,8 @@ public static void Main(string[] args)
     }
 }
 ```
+
+Next steps
+Move initialization and configuration out of objects. e.g.:
+    PartProvider should receive its part readers
+    PrimitiveTypeReader should receive its strategies

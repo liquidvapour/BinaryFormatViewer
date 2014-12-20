@@ -15,6 +15,6 @@ namespace BinaryFormatViewer
 
         public IDictionary<uint, IdentifiedNode> IdNodes { get; private set; }
         public Stack<Node> ResolutionStack { get; private set; }
-        public int Resolves { get; set; }
+        public int SkipedResolves { get; set; }
     }
 }
