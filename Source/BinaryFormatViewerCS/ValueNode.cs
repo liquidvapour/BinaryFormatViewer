@@ -16,7 +16,12 @@
 
         public override string ToString()
         {
-            return string.Format("ValueNode of type '{0}' with value: '{1}", GetType().Name, _value);
+            return string.Format("ValueNode of type '{0}' with value: '{1}", GetTypeArgumentName(), _value);
+        }
+
+        public string GetTypeArgumentName()
+        {
+            return typeof(T).Name;
         }
     }
 }

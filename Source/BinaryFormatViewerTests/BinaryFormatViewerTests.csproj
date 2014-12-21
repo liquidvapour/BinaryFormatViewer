@@ -98,12 +98,14 @@
     <Compile Include="SpecificationBase.cs" />
     <Compile Include="StringExtentions.cs" />
     <Compile Include="TestItem.cs" />
+    <Compile Include="ValueNode.cs" />
     <Compile Include="when_a_serialized_array_is_read.cs" />
     <Compile Include="when_reading_a_serialized_array_of_4_null_values.cs" />
+    <Compile Include="when_reading_a_serialized_array_of_test_item.cs" />
     <Compile Include="when_reading_a_serialized_array_with_2_dimensions.cs" />
     <Compile Include="when_reading_a_serialized_array_with_an_instance_at_index_2_and_3_null_values.cs" />
     <Compile Include="when_reading_a_serialized_jagged_array_with_2_dimensions.cs" />
-    <Compile Include="when_reading_a_serialized_TestItem.cs" />
+    <Compile Include="when_reading_a_serialized_test_item.cs" />
     <Compile Include="when_told_to_read_an_array_of_complex_type.cs" />
     <Compile Include="when_told_to_read_a_complex_type.cs" />
     <Compile Include="when_told_to_read_blob_bin.cs" />
