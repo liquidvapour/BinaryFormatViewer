@@ -31,25 +31,36 @@ namespace SerializationSpike
     {
 
         [Test]
-        public void should_work()
+        public void field_names_should_be_as_exptected()
         {
-            var fooNode = (ObjectNode)result;
+            var fooNode = (ObjectNode) result;
             Assert.That(fooNode.Name, Is.EqualTo("SerializationSpike.Foo"));
 
             AssertField(fooNode.Fields[0], "Bar");
 
             AssertField(fooNode.Fields[1], "Shmoo");
+        }
 
+        [Test]
+        public void referenced_objects_field_names_should_be_as_expexted()
+        {
+            var fooNode = (ObjectNode) result;
             var shmooNode = (ObjectNode) fooNode.Fields[1].Value;
             Assert.That(shmooNode.Name, Is.EqualTo("SerializationSpike.Shmoo"));
 
             AssertField(shmooNode.Fields[0], "Bar");
 
             AssertField(shmooNode.Fields[1], "Foo");
+        }
 
+        [Test]
+        public void reference_back_to_original_object_will_refer_to_the_same_object()            
+        {
+            var fooNode = (ObjectNode)result;
+            var shmooNode = (ObjectNode)fooNode.Fields[1].Value; 
             var shmooFooNode = shmooNode.Fields[1];
 
-            Assert.That(shmooFooNode, Is.EqualTo(fooNode));
+            Assert.That(shmooFooNode.Value, Is.EqualTo(fooNode));
         }
 
         private static void AssertField(FieldNode fieldNode, string fieldName)
