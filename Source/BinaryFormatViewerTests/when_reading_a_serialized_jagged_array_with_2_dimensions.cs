@@ -30,22 +30,22 @@ namespace SerializationSpike
         {
             var node = (GenericArrayNode) result;
 
-            Assert.That(node.Values.Count, Is.EqualTo(2));
+            Assert.That(node.Children.Count, Is.EqualTo(2));
 
-            Assert.That(node.Values[0], Is.TypeOf<GenericArrayNode>());
-            Assert.That(node.Values[1], Is.TypeOf<GenericArrayNode>());
-            var val0 = (GenericArrayNode) node.Values[0];
-            Assert.That(val0.Values[0], Is.TypeOf<ObjectNode>());
-            var obj0 = (ObjectNode) val0.Values[0];
-            Assert.That(obj0.Values[0], Is.TypeOf<StringNode>());
-            var str0 = (StringNode) obj0.Values[0];
+            Assert.That(node.Children[0], Is.TypeOf<GenericArrayNode>());
+            Assert.That(node.Children[1], Is.TypeOf<GenericArrayNode>());
+            var val0 = (GenericArrayNode) node.Children[0];
+            Assert.That(val0.Children[0], Is.TypeOf<ObjectNode>());
+            var obj0 = (ObjectNode) val0.Children[0];
+            Assert.That(obj0.Children[0], Is.TypeOf<StringNode>());
+            var str0 = (StringNode) obj0.Children[0];
             Assert.That(str0.Value, Is.EqualTo("Bob"));
 
-            var val1 = (GenericArrayNode) node.Values[0];
-            Assert.That(val1.Values[1], Is.TypeOf<ObjectNode>());
-            var obj1 = (ObjectNode) val0.Values[1];
-            Assert.That(obj1.Values[0], Is.TypeOf<StringNode>());
-            var str1 = (StringNode) obj1.Values[0];
+            var val1 = (GenericArrayNode) node.Children[0];
+            Assert.That(val1.Children[1], Is.TypeOf<ObjectNode>());
+            var obj1 = (ObjectNode) val0.Children[1];
+            Assert.That(obj1.Children[0], Is.TypeOf<StringNode>());
+            var str1 = (StringNode) obj1.Children[0];
             Assert.That(str0.Value, Is.EqualTo("Jill"));
         }
 

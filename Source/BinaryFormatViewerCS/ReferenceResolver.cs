@@ -101,7 +101,7 @@ namespace BinaryFormatViewer
 
         private static void ResolveReferencesInAParentNode(Node node, ResolutionContext context)
         {
-            node.TrackNodeAnd(context, () => ResolveNodeReferences(((IHaveChildren)node).Values, context));
+            node.TrackNodeAnd(context, () => ResolveNodeReferences(((IHaveChildren)node).Children, context));
         }
 
         private static void TrackNodeAnd(this Node node, ResolutionContext context, Action doIt)

@@ -22,7 +22,7 @@ namespace BinaryFormatViewer
             Assembly = assembly;
         }
 
-        public IList<Node> Values
+        public IList<Node> Children
         {
             get
             {

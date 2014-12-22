@@ -20,16 +20,16 @@ namespace SerializationSpike
         public void should_contain_an_object_array_of_two_items()
         {
             var typedResult = (GenericArrayNode)result;
-            Assert.That(typedResult.Values.Count, Is.EqualTo(2));
+            Assert.That(typedResult.Children.Count, Is.EqualTo(2));
         }
 
         [Test]
         public void first_item_should_contain_jill()
         {
             var typedResult = (GenericArrayNode)result;
-            var itemZero = (RuntimeObjectNode)typedResult.Values[0];
-            Assert.That(itemZero.Values[0], Is.TypeOf<StringNode>());
-            var stringItem = (StringNode) itemZero.Values[0];
+            var itemZero = (RuntimeObjectNode)typedResult.Children[0];
+            Assert.That(itemZero.Children[0], Is.TypeOf<StringNode>());
+            var stringItem = (StringNode) itemZero.Children[0];
             Assert.That(stringItem.Value, Is.EqualTo("Jill"));
         }
 
@@ -37,9 +37,9 @@ namespace SerializationSpike
         public void second_item_should_contain_chris()
         {
             var typedResult = (GenericArrayNode)result;
-            var itemOne = (RuntimeObjectNode)typedResult.Values[1];
-            Assert.That(itemOne.Values[0], Is.TypeOf<StringNode>());
-            var stringItem = (StringNode)itemOne.Values[0];
+            var itemOne = (RuntimeObjectNode)typedResult.Children[1];
+            Assert.That(itemOne.Children[0], Is.TypeOf<StringNode>());
+            var stringItem = (StringNode)itemOne.Children[0];
             Assert.That(stringItem.Value, Is.EqualTo("Chris"));
         }
     }

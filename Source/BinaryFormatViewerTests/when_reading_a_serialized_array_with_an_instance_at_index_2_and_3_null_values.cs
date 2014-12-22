@@ -32,16 +32,16 @@ namespace SerializationSpike
         public void should_contain_a_null_node_at_index_0_1_and_3()
         {
             var arrayNode = (GenericArrayNode) result;
-            Assert.That(arrayNode.Values[0], Is.TypeOf(typeof (NullNode)));
-            Assert.That(arrayNode.Values[1], Is.TypeOf(typeof (NullNode)));
-            Assert.That(arrayNode.Values[3], Is.TypeOf(typeof (NullNode)));
+            Assert.That(arrayNode.Children[0], Is.TypeOf(typeof (NullNode)));
+            Assert.That(arrayNode.Children[1], Is.TypeOf(typeof (NullNode)));
+            Assert.That(arrayNode.Children[3], Is.TypeOf(typeof (NullNode)));
         }
 
         [Test]
         public void should_contain_a_object_node_at_index_2()
         {
             var arrayNode = (GenericArrayNode) result;
-            Assert.That(arrayNode.Values[2], Is.TypeOf(typeof (ObjectNode)));
+            Assert.That(arrayNode.Children[2], Is.TypeOf(typeof (ObjectNode)));
         }
 
         [Test]

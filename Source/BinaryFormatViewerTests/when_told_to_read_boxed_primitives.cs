@@ -29,7 +29,7 @@ namespace SerializationSpike
         public void should_create_a_node_with_one_int32_child_node()
         {
             var objectNode = (ObjectNode) result;
-            Assert.That(objectNode.Values[0], Is.TypeOf(typeof (ValueNode<int>)));
+            Assert.That(objectNode.Children[0], Is.TypeOf(typeof (ValueNode<int>)));
         }
 
         [Test]

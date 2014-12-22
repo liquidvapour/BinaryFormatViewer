@@ -12,7 +12,7 @@ namespace BinaryFormatViewer
             _nodes = elements;
         }
 
-        public IList<Node> Values
+        public IList<Node> Children
         {
             get { return _nodes; }
         }

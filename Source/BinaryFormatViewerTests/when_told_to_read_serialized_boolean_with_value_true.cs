@@ -29,7 +29,7 @@ namespace SerializationSpike
         public void boolean_node_should_have_value_true()
         {
             var runtimeObjectNode = (RuntimeObjectNode) result;
-            var shortNode = (ValueNode<bool>) runtimeObjectNode.Values[0];
+            var shortNode = (ValueNode<bool>) runtimeObjectNode.Children[0];
             Assert.That(shortNode.Value, Is.EqualTo(true));
         }
 

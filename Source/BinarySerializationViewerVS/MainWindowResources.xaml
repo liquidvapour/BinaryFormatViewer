@@ -64,7 +64,7 @@
                   </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
     	      </ItemsControl>
-              <ListBox ItemsSource="{Binding Path=Values}" />
+              <ListBox ItemsSource="{Binding Path=Children}" />
             </StackPanel>
           </Expander.Content>
     	</Expander>

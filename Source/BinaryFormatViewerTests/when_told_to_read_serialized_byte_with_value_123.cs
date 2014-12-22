@@ -29,7 +29,7 @@ namespace SerializationSpike
         public void boolean_node_should_have_value_true()
         {
             var runtimeObjectNode = (RuntimeObjectNode) result;
-            var byteNode = (ValueNode<byte>) runtimeObjectNode.Values[0];
+            var byteNode = (ValueNode<byte>) runtimeObjectNode.Children[0];
             Assert.That(byteNode.Value, Is.EqualTo(123));
         }
 
@@ -43,7 +43,7 @@ namespace SerializationSpike
         public void the_runtime_object_should_contain_a_byte_node()
         {
             var runtimeObjectNode = (RuntimeObjectNode) result;
-            Assert.That(runtimeObjectNode.Values[0], Is.TypeOf(typeof (ValueNode<byte>)));
+            Assert.That(runtimeObjectNode.Children[0], Is.TypeOf(typeof (ValueNode<byte>)));
         }
     }
 }

@@ -22,7 +22,7 @@ namespace BinaryFormatViewer
             var assemblyRefNode = metaDataObject.Assembly as AssemblyRefNode;
             if (assemblyRefNode != null)
             {
-                assemblyId = assemblyRefNode.Id;
+                assemblyId = assemblyRefNode.AssemblyId;
             }
             else
             {

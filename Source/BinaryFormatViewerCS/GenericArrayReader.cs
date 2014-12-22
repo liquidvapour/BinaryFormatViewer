@@ -25,7 +25,7 @@ namespace BinaryFormatViewer
 
             int nullItemsLeft = 0;
 
-            foreach (int i in Enumerable.Range(0, GetTotalElementCount(elementCountPerDimention)))
+            foreach (var i in Enumerable.Range(0, GetTotalElementCount(elementCountPerDimention)))
             {
                 Node node = null;
                 if (nullItemsLeft == 0)

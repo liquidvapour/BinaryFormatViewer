@@ -45,7 +45,7 @@ namespace SerializationSpike
             {
                 if (objectNode.Fields[i].Name == name)
                 {
-                    return objectNode.Values[i];
+                    return objectNode.Children[i];
                 }
             }
 

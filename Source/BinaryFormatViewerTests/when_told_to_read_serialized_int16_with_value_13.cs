@@ -30,7 +30,7 @@ namespace SerializationSpike
         public void int_16_node_should_have_value_13()
         {
             var runtimeObjectNode = (RuntimeObjectNode) result;
-            var shortNode = (ValueNode<short>) runtimeObjectNode.Values[0];
+            var shortNode = (ValueNode<short>) runtimeObjectNode.Children[0];
             Assert.That(shortNode.Value, Is.EqualTo(13));
         }
 
@@ -44,7 +44,7 @@ namespace SerializationSpike
         public void the_runtime_object_should_contain_an_int_32_node()
         {
             var runtimeObjectNode = (RuntimeObjectNode) result;
-            Assert.That(runtimeObjectNode.Values[0], Is.TypeOf(typeof (ValueNode<short>)));
+            Assert.That(runtimeObjectNode.Children[0], Is.TypeOf(typeof (ValueNode<short>)));
         }
     }
 }
